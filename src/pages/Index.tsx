@@ -180,47 +180,27 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50/50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                  <Target className="w-5 h-5 text-white" />
-                </div>
-                <h1 className="text-xl font-semibold text-gray-900">
-                  Lookalike Audiences
-                </h1>
-              </div>
-              <Badge
-                variant="secondary"
-                className="bg-primary/10 text-primary border-primary/20"
-              >
-                Pro Plan
-              </Badge>
-            </div>
+    <div className="min-h-screen bg-gray-50/50 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Page Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Lookalike Audiences</h1>
+            <p className="text-gray-600 mt-1">
+              Create, manage, and analyze your custom audience segments
+            </p>
+          </div>
 
-            <div className="flex items-center gap-3">
-              <Button variant="outline" size="sm">
-                <Settings className="w-4 h-4 mr-2" />
-                Settings
-              </Button>
-              <Button size="sm" onClick={() => setShowCreateModal(true)}>
-                <Plus className="w-4 h-4 mr-2" />
-                Create Audience
-              </Button>
-              <Avatar className="w-8 h-8">
-                <AvatarImage src="/placeholder.svg" />
-                <AvatarFallback>JD</AvatarFallback>
-              </Avatar>
-            </div>
+          <div className="flex items-center gap-3">
+            <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+              Pro Plan
+            </Badge>
+            <Button size="sm" onClick={() => setShowCreateModal(true)}>
+              <Plus className="w-4 h-4 mr-2" />
+              Create Audience
+            </Button>
           </div>
         </div>
-      </header>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {loading
@@ -361,9 +341,8 @@ const Index = () => {
                             {Array.from({ length: 4 }).map((_, i) => (
                               <Skeleton key={i} className="w-8 h-8" />
                             ))}
-                          </div>
-                        </div>
-                      </div>
+        </div>
+      </div>
                     ))}
                   </div>
                 ) : audiences.length === 0 ? (
