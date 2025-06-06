@@ -47,7 +47,8 @@ import {
   RefreshCw,
   Filter,
   BarChart3,
-  PieChart as PieChartIcon,
+  PieChart,
+  TrendingUp as LineChartIcon
   LineChart as LineChartIcon,
 } from "lucide-react";
 import {
@@ -513,7 +514,7 @@ const Analytics = () => {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <PieChartIcon className="w-5 h-5" />
+                    <PieChart className="w-5 h-5" />
                     Geographic Distribution
                   </CardTitle>
                   <CardDescription>
