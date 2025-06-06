@@ -19,7 +19,8 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/components/ui/use-toast";
 import {
   Users,
   TrendingUp,
@@ -40,70 +41,136 @@ import {
   Edit,
   Copy,
   Trash2,
+  AlertCircle,
 } from "lucide-react";
+import { useAudienceStore } from "@/hooks/useAudienceStore";
+import { CreateAudienceModal } from "@/components/CreateAudienceModal";
+import { AudienceDetailsModal } from "@/components/AudienceDetailsModal";
+import { Audience } from "@/types/audience";
 
 const Index = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const { toast } = useToast();
+  const {
+    audiences,
+    loading,
+    filters,
+    stats,
+    setFilters,
+    createAudience,
+    updateAudience,
+    deleteAudience,
+    duplicateAudience,
+    getAudience,
+  } = useAudienceStore();
 
-  // Mock data for lookalike audiences
-  const audiences = [
-    {
-      id: 1,
-      name: "High-Value Customers",
-      size: "2.3M",
-      similarity: 92,
-      status: "Active",
-      created: "2024-01-15",
-      performance: "High",
-      source: "Customer Database",
-    },
-    {
-      id: 2,
-      name: "Mobile App Users",
-      size: "1.8M",
-      similarity: 88,
-      status: "Active",
-      created: "2024-01-10",
-      performance: "Medium",
-      source: "App Analytics",
-    },
-    {
-      id: 3,
-      name: "Newsletter Subscribers",
-      size: "945K",
-      similarity: 85,
-      status: "Paused",
-      created: "2024-01-05",
-      performance: "Low",
-      source: "Email Platform",
-    },
-  ];
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [selectedAudience, setSelectedAudience] = useState<Audience | null>(
+    null,
+  );
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
 
-  const stats = [
+  const handleCreateAudience = (
+    audienceData: Omit<Audience, "id" | "created">,
+  ) => {
+    const newAudience = createAudience(audienceData);
+    toast({
+      title: "Audience Created",
+      description: `${newAudience.name} has been created successfully.`,
+    });
+  };
+
+  const handleViewAudience = (id: string) => {
+    const audience = getAudience(id);
+    if (audience) {
+      setSelectedAudience(audience);
+      setShowDetailsModal(true);
+    }
+  };
+
+  const handleUpdateAudience = (id: string, updates: Partial<Audience>) => {
+    updateAudience(id, updates);
+    // Update the selected audience if it's currently being viewed
+    if (selectedAudience && selectedAudience.id === id) {
+      setSelectedAudience((prev) => (prev ? { ...prev, ...updates } : null));
+    }
+    toast({
+      title: "Audience Updated",
+      description: "Audience has been updated successfully.",
+    });
+  };
+
+  const handleDuplicateAudience = (id: string) => {
+    const duplicated = duplicateAudience(id);
+    if (duplicated) {
+      toast({
+        title: "Audience Duplicated",
+        description: `${duplicated.name} has been created as a copy.`,
+      });
+    }
+  };
+
+  const handleDeleteAudience = (id: string) => {
+    const audience = getAudience(id);
+    deleteAudience(id);
+    toast({
+      title: "Audience Deleted",
+      description: `${audience?.name} has been deleted.`,
+      variant: "destructive",
+    });
+  };
+
+  const handleExportData = () => {
+    const dataStr = JSON.stringify(audiences, null, 2);
+    const dataBlob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "lookalike-audiences.json";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    toast({
+      title: "Export Complete",
+      description: "Audience data has been exported to JSON file.",
+    });
+  };
+
+  const formatNumber = (num: number) => {
+    if (num >= 1000000) {
+      return `${(num / 1000000).toFixed(1)}M`;
+    } else if (num >= 1000) {
+      return `${(num / 1000).toFixed(0)}K`;
+    }
+    return num.toString();
+  };
+
+  const statsData = [
     {
       title: "Total Audiences",
-      value: "12",
+      value: stats.totalAudiences.toString(),
       change: "+3 this month",
       icon: Users,
       trend: "up",
     },
     {
       title: "Total Reach",
-      value: "8.2M",
+      value: formatNumber(stats.totalReach),
       change: "+15% from last month",
       icon: TrendingUp,
       trend: "up",
     },
     {
       title: "Avg. Similarity",
-      value: "89%",
+      value: `${stats.avgSimilarity}%`,
       change: "+2% improvement",
       icon: Target,
       trend: "up",
     },
     {
       title: "Active Campaigns",
-      value: "7",
+      value: stats.activeCampaigns.toString(),
       change: "2 ending soon",
       icon: Activity,
       trend: "neutral",
@@ -138,7 +205,7 @@ const Index = () => {
                 <Settings className="w-4 h-4 mr-2" />
                 Settings
               </Button>
-              <Button size="sm">
+              <Button size="sm" onClick={() => setShowCreateModal(true)}>
                 <Plus className="w-4 h-4 mr-2" />
                 Create Audience
               </Button>
@@ -154,36 +221,51 @@ const Index = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {stats.map((stat, index) => (
-            <Card key={index}>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">
-                      {stat.title}
-                    </p>
-                    <p className="text-2xl font-bold text-gray-900 mt-1">
-                      {stat.value}
-                    </p>
-                    <p
-                      className={`text-xs mt-1 ${
-                        stat.trend === "up"
-                          ? "text-green-600"
-                          : stat.trend === "down"
-                            ? "text-red-600"
-                            : "text-gray-500"
-                      }`}
-                    >
-                      {stat.change}
-                    </p>
-                  </div>
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                    <stat.icon className="w-6 h-6 text-primary" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          {loading
+            ? Array.from({ length: 4 }).map((_, index) => (
+                <Card key={index}>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-24" />
+                        <Skeleton className="h-8 w-16" />
+                        <Skeleton className="h-3 w-20" />
+                      </div>
+                      <Skeleton className="w-12 h-12 rounded-lg" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            : statsData.map((stat, index) => (
+                <Card key={index}>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">
+                          {stat.title}
+                        </p>
+                        <p className="text-2xl font-bold text-gray-900 mt-1">
+                          {stat.value}
+                        </p>
+                        <p
+                          className={`text-xs mt-1 ${
+                            stat.trend === "up"
+                              ? "text-green-600"
+                              : stat.trend === "down"
+                                ? "text-red-600"
+                                : "text-gray-500"
+                          }`}
+                        >
+                          {stat.change}
+                        </p>
+                      </div>
+                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                        <stat.icon className="w-6 h-6 text-primary" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -203,7 +285,11 @@ const Index = () => {
                       <Upload className="w-4 h-4 mr-2" />
                       Import
                     </Button>
-                    <Button variant="outline" size="sm">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleExportData}
+                    >
                       <Download className="w-4 h-4 mr-2" />
                       Export
                     </Button>
@@ -217,116 +303,184 @@ const Index = () => {
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
                       placeholder="Search audiences..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      value={filters.search}
+                      onChange={(e) =>
+                        setFilters({ ...filters, search: e.target.value })
+                      }
                       className="pl-10"
                     />
                   </div>
-                  <Select>
+                  <Select
+                    value={filters.status}
+                    onValueChange={(value) =>
+                      setFilters({ ...filters, status: value })
+                    }
+                  >
                     <SelectTrigger className="w-[140px]">
                       <Filter className="w-4 h-4 mr-2" />
                       <SelectValue placeholder="Status" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Status</SelectItem>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="paused">Paused</SelectItem>
-                      <SelectItem value="draft">Draft</SelectItem>
+                      <SelectItem value="Active">Active</SelectItem>
+                      <SelectItem value="Paused">Paused</SelectItem>
+                      <SelectItem value="Draft">Draft</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 {/* Audiences List */}
-                <div className="space-y-4">
-                  {audiences.map((audience) => (
-                    <div
-                      key={audience.id}
-                      className="border border-gray-200 rounded-lg p-4 hover:border-primary/50 transition-colors"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h3 className="font-semibold text-gray-900">
-                              {audience.name}
-                            </h3>
-                            <Badge
-                              variant={
-                                audience.status === "Active"
-                                  ? "default"
-                                  : "secondary"
-                              }
-                            >
-                              {audience.status}
-                            </Badge>
-                            <Badge
-                              variant="outline"
-                              className={
-                                audience.performance === "High"
-                                  ? "border-green-500 text-green-700"
-                                  : audience.performance === "Medium"
-                                    ? "border-yellow-500 text-yellow-700"
-                                    : "border-red-500 text-red-700"
-                              }
-                            >
-                              {audience.performance}
-                            </Badge>
-                          </div>
-
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600">
-                            <div>
-                              <p className="font-medium">Size</p>
-                              <p>{audience.size} people</p>
+                {loading ? (
+                  <div className="space-y-4">
+                    {Array.from({ length: 3 }).map((_, index) => (
+                      <div
+                        key={index}
+                        className="border border-gray-200 rounded-lg p-4"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1 space-y-3">
+                            <div className="flex items-center gap-3">
+                              <Skeleton className="h-6 w-48" />
+                              <Skeleton className="h-5 w-16" />
+                              <Skeleton className="h-5 w-20" />
                             </div>
-                            <div>
-                              <p className="font-medium">Similarity</p>
-                              <div className="flex items-center gap-2">
-                                <Progress
-                                  value={audience.similarity}
-                                  className="w-16 h-2"
-                                />
-                                <span>{audience.similarity}%</span>
-                              </div>
-                            </div>
-                            <div>
-                              <p className="font-medium">Source</p>
-                              <p>{audience.source}</p>
-                            </div>
-                            <div>
-                              <p className="font-medium">Created</p>
-                              <p>
-                                {new Date(
-                                  audience.created,
-                                ).toLocaleDateString()}
-                              </p>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                              <Skeleton className="h-4 w-20" />
+                              <Skeleton className="h-4 w-24" />
+                              <Skeleton className="h-4 w-28" />
+                              <Skeleton className="h-4 w-16" />
                             </div>
                           </div>
-                        </div>
-
-                        <div className="flex items-center gap-1 ml-4">
-                          <Button variant="ghost" size="sm">
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <Copy className="w-4 h-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                          <div className="flex gap-1">
+                            {Array.from({ length: 4 }).map((_, i) => (
+                              <Skeleton key={i} className="w-8 h-8" />
+                            ))}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : audiences.length === 0 ? (
+                  <div className="text-center py-12">
+                    <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      No audiences found
+                    </h3>
+                    <p className="text-gray-500 mb-4">
+                      {filters.search || filters.status !== "all"
+                        ? "Try adjusting your search or filters."
+                        : "Create your first lookalike audience to get started."}
+                    </p>
+                    <Button onClick={() => setShowCreateModal(true)}>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Create Your First Audience
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {audiences.map((audience) => (
+                      <div
+                        key={audience.id}
+                        className="border border-gray-200 rounded-lg p-4 hover:border-primary/50 transition-colors"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <h3 className="font-semibold text-gray-900">
+                                {audience.name}
+                              </h3>
+                              <Badge
+                                variant={
+                                  audience.status === "Active"
+                                    ? "default"
+                                    : "secondary"
+                                }
+                              >
+                                {audience.status}
+                              </Badge>
+                              <Badge
+                                variant="outline"
+                                className={
+                                  audience.performance === "High"
+                                    ? "border-green-500 text-green-700"
+                                    : audience.performance === "Medium"
+                                      ? "border-yellow-500 text-yellow-700"
+                                      : "border-red-500 text-red-700"
+                                }
+                              >
+                                {audience.performance}
+                              </Badge>
+                            </div>
 
-                <div className="flex items-center justify-center pt-6">
-                  <Button variant="outline">
-                    Load More Audiences
-                    <ChevronRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </div>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600">
+                              <div>
+                                <p className="font-medium">Size</p>
+                                <p>{formatNumber(audience.size)} people</p>
+                              </div>
+                              <div>
+                                <p className="font-medium">Similarity</p>
+                                <div className="flex items-center gap-2">
+                                  <Progress
+                                    value={audience.similarity}
+                                    className="w-16 h-2"
+                                  />
+                                  <span>{audience.similarity}%</span>
+                                </div>
+                              </div>
+                              <div>
+                                <p className="font-medium">Source</p>
+                                <p>{audience.source}</p>
+                              </div>
+                              <div>
+                                <p className="font-medium">Created</p>
+                                <p>
+                                  {new Date(
+                                    audience.created,
+                                  ).toLocaleDateString()}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-1 ml-4">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleViewAudience(audience.id)}
+                            >
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() =>
+                                handleDuplicateAudience(audience.id)
+                              }
+                            >
+                              <Copy className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteAudience(audience.id)}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {!loading && audiences.length > 0 && (
+                  <div className="flex items-center justify-center pt-6">
+                    <p className="text-sm text-gray-500">
+                      Showing {audiences.length} of {stats.totalAudiences}{" "}
+                      audiences
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -339,7 +493,11 @@ const Index = () => {
                 <CardTitle className="text-lg">Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button className="w-full justify-start" variant="outline">
+                <Button
+                  className="w-full justify-start"
+                  variant="outline"
+                  onClick={() => setShowCreateModal(true)}
+                >
                   <Plus className="w-4 h-4 mr-2" />
                   Create New Audience
                 </Button>
@@ -508,6 +666,22 @@ const Index = () => {
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      <CreateAudienceModal
+        open={showCreateModal}
+        onOpenChange={setShowCreateModal}
+        onCreateAudience={handleCreateAudience}
+      />
+
+      <AudienceDetailsModal
+        audience={selectedAudience}
+        open={showDetailsModal}
+        onOpenChange={setShowDetailsModal}
+        onUpdateAudience={handleUpdateAudience}
+        onDuplicateAudience={handleDuplicateAudience}
+        onDeleteAudience={handleDeleteAudience}
+      />
     </div>
   );
 };
