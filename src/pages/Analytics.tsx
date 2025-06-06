@@ -212,12 +212,11 @@ const Analytics = () => {
               onClick={handleRefreshData}
               disabled={isLoading}
             >
-              <Refresh
+              <RefreshCw
                 className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
               />
               Refresh
             </Button>
-
             <Button
               variant="outline"
               onClick={handleRefreshData}
