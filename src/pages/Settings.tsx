@@ -56,7 +56,7 @@ import {
   Settings as SettingsIcon,
   Moon,
   Sun,
-  Laptop
+  Laptop,
 } from "lucide-react";
 import { User as UserType, UserRole, APIKey } from "@/types/auth";
 
@@ -430,8 +430,7 @@ const Settings = () => {
                     {[
                       { value: "light", label: "Light", icon: Sun },
                       { value: "dark", label: "Dark", icon: Moon },
-                      { value: "auto", label: "System", icon: Laptop }
-                      { value: "auto", label: "System", icon: Monitor },
+                      { value: "auto", label: "System", icon: Laptop },
                     ].map((option) => (
                       <div
                         key={option.value}
