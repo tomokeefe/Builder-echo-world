@@ -185,14 +185,19 @@ const Index = () => {
         {/* Page Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Lookalike Audiences</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Lookalike Audiences
+            </h1>
             <p className="text-gray-600 mt-1">
               Create, manage, and analyze your custom audience segments
             </p>
           </div>
 
           <div className="flex items-center gap-3">
-            <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+            <Badge
+              variant="secondary"
+              className="bg-primary/10 text-primary border-primary/20"
+            >
               Pro Plan
             </Badge>
             <Button size="sm" onClick={() => setShowCreateModal(true)}>
@@ -341,6 +346,9 @@ const Index = () => {
                             {Array.from({ length: 4 }).map((_, i) => (
                               <Skeleton key={i} className="w-8 h-8" />
                             ))}
+                          </div>
+                        </div>
+                      </div>
                     ))}
                   </div>
                 ) : audiences.length === 0 ? (
