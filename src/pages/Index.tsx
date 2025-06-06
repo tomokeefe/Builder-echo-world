@@ -341,8 +341,6 @@ const Index = () => {
                             {Array.from({ length: 4 }).map((_, i) => (
                               <Skeleton key={i} className="w-8 h-8" />
                             ))}
-        </div>
-      </div>
                     ))}
                   </div>
                 ) : audiences.length === 0 ? (
