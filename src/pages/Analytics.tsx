@@ -44,7 +44,7 @@ import {
   Globe,
   Calendar,
   Download,
-  Refresh,
+  RefreshCw,
   Filter,
   BarChart3,
   PieChart as PieChartIcon,
@@ -218,9 +218,15 @@ const Analytics = () => {
               Refresh
             </Button>
 
-            <Button variant="outline">
-              <Download className="w-4 h-4 mr-2" />
-              Export
+            <Button
+              variant="outline"
+              onClick={handleRefreshData}
+              disabled={isLoading}
+            >
+              <RefreshCw
+                className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+              />
+              Refresh
             </Button>
           </div>
         </div>

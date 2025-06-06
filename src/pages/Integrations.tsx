@@ -27,7 +27,7 @@ import {
   CheckCircle,
   AlertCircle,
   ExternalLink,
-  Refresh,
+  RefreshCw,
   Trash2,
   Facebook,
   Mail,
@@ -404,7 +404,7 @@ const Integrations = () => {
                               Configure
                             </Button>
                             <Button variant="outline" size="sm">
-                              <Refresh className="w-4 h-4" />
+                              <RefreshCw className="w-4 h-4" />
                             </Button>
                             <Button variant="outline" size="sm">
                               <Trash2 className="w-4 h-4" />
