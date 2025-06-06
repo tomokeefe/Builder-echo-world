@@ -46,6 +46,7 @@ import {
 import { useAudienceStore } from "@/hooks/useAudienceStore";
 import { CreateAudienceModal } from "@/components/CreateAudienceModal";
 import { AudienceDetailsModal } from "@/components/AudienceDetailsModal";
+import { CSVUploadModal } from "@/components/CSVUploadModal";
 import { Audience } from "@/types/audience";
 
 const Index = () => {
@@ -68,6 +69,7 @@ const Index = () => {
     null,
   );
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showCSVUploadModal, setShowCSVUploadModal] = useState(false);
 
   const handleCreateAudience = (
     audienceData: Omit<Audience, "id" | "created">,
@@ -281,7 +283,11 @@ const Index = () => {
                     </CardDescription>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowCSVUploadModal(true)}
+                    >
                       <Upload className="w-4 h-4 mr-2" />
                       Import
                     </Button>
@@ -501,7 +507,11 @@ const Index = () => {
                   <Plus className="w-4 h-4 mr-2" />
                   Create New Audience
                 </Button>
-                <Button className="w-full justify-start" variant="outline">
+                <Button
+                  className="w-full justify-start"
+                  variant="outline"
+                  onClick={() => setShowCSVUploadModal(true)}
+                >
                   <Upload className="w-4 h-4 mr-2" />
                   Upload Customer Data
                 </Button>
@@ -671,6 +681,12 @@ const Index = () => {
       <CreateAudienceModal
         open={showCreateModal}
         onOpenChange={setShowCreateModal}
+        onCreateAudience={handleCreateAudience}
+      />
+
+      <CSVUploadModal
+        open={showCSVUploadModal}
+        onOpenChange={setShowCSVUploadModal}
         onCreateAudience={handleCreateAudience}
       />
 
