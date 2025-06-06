@@ -29,7 +29,6 @@ import {
   ExternalLink,
   RefreshCw,
   Trash2,
-  Facebook,
   Mail,
   ShoppingCart,
   BarChart,
@@ -132,7 +131,7 @@ const Integrations = () => {
       name: "Facebook Ads",
       description: "Sync audiences and campaigns with Facebook Ads Manager",
       category: "ads",
-      icon: Facebook,
+      icon: ExternalLink,
       color: "bg-blue-500",
       features: [
         "Custom Audiences",
