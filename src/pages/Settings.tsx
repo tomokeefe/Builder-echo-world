@@ -57,7 +57,6 @@ import {
   Moon,
   Sun,
   Laptop
-  Monitor,
 } from "lucide-react";
 import { User as UserType, UserRole, APIKey } from "@/types/auth";
 

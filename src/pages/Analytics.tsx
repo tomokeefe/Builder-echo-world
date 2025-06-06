@@ -48,8 +48,7 @@ import {
   Filter,
   BarChart3,
   PieChart,
-  TrendingUp as LineChartIcon
-  LineChart as LineChartIcon,
+  TrendingUp as LineChartIcon,
 } from "lucide-react";
 import {
   PerformanceMetric,
