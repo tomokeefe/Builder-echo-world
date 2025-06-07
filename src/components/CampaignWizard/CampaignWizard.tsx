@@ -78,6 +78,7 @@ export function CampaignWizard({
   };
 
   const handleFinish = async () => {
+    console.log("Starting campaign creation with data:", wizardData);
     setIsLoading(true);
 
     try {
