@@ -54,6 +54,12 @@ export const useCampaignWizard = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  console.log(
+    "useCampaignWizard - Current step:",
+    currentStep,
+    "Data:",
+    wizardData,
+  );
   const updateWizardData = useCallback(
     (updates: Partial<CampaignWizardData>) => {
       setWizardData((prev) => ({ ...prev, ...updates }));
