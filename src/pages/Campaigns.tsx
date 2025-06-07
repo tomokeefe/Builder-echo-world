@@ -28,7 +28,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
-import { CampaignWizard } from "@/components/CampaignWizard/CampaignWizard";
+import { SimpleCampaignWizard } from "@/components/SimpleCampaignWizard";
 import { TestModal } from "@/components/TestModal";
 import {
   Plus,
@@ -667,7 +667,7 @@ const Campaigns = () => {
       <TestModal open={showTestModal} onOpenChange={setShowTestModal} />
 
       {/* Campaign Wizard */}
-      <CampaignWizard
+      <SimpleCampaignWizard
         open={showCampaignWizard}
         onOpenChange={setShowCampaignWizard}
         onCreateCampaign={handleCreateCampaign}
