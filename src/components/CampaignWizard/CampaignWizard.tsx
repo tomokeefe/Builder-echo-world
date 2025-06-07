@@ -177,6 +177,17 @@ export function CampaignWizard({
     }
   };
 
+  console.log(
+    "CampaignWizard render - open:",
+    open,
+    "currentStep:",
+    currentStep,
+  );
+
+  if (!open) {
+    return null;
+  }
+
   return (
     <>
       <Dialog open={open} onOpenChange={handleClose}>
