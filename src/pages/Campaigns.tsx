@@ -374,12 +374,7 @@ const Campaigns = () => {
               Analytics
             </Button>
 
-            <Button
-              onClick={() => {
-                console.log("Opening Campaign Wizard");
-                setShowCampaignWizard(true);
-              }}
-            >
+            <Button onClick={() => setShowCampaignWizard(true)}>
               <Wand2 className="w-4 h-4 mr-2" />
               Create Campaign
             </Button>
