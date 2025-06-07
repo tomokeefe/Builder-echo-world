@@ -199,6 +199,8 @@ const Campaigns = () => {
   const handleCreateCampaign = (
     campaignData: Omit<Campaign, "id" | "created" | "updated" | "createdBy">,
   ) => {
+    console.log("Creating campaign with data:", campaignData);
+
     const newCampaign: Campaign = {
       ...campaignData,
       id: Date.now().toString(),
@@ -213,6 +215,8 @@ const Campaigns = () => {
       title: "Campaign Created Successfully! 🎉",
       description: `${newCampaign.name} has been created and is ready to launch.`,
     });
+
+    console.log("Campaign created successfully:", newCampaign);
   };
 
   const filteredCampaigns = campaigns.filter((campaign) => {
@@ -302,7 +306,12 @@ const Campaigns = () => {
               <BarChart3 className="w-4 h-4 mr-2" />
               Analytics
             </Button>
-            <Button onClick={() => setShowCampaignWizard(true)}>
+            <Button
+              onClick={() => {
+                console.log("Opening Campaign Wizard");
+                setShowCampaignWizard(true);
+              }}
+            >
               <Wand2 className="w-4 h-4 mr-2" />
               Create Campaign
             </Button>
@@ -560,7 +569,12 @@ const Campaigns = () => {
                     ? "Try adjusting your search or filters."
                     : "Create your first campaign to get started."}
                 </p>
-                <Button onClick={() => setShowCampaignWizard(true)}>
+                <Button
+                  onClick={() => {
+                    console.log("Opening Campaign Wizard from empty state");
+                    setShowCampaignWizard(true);
+                  }}
+                >
                   <Wand2 className="w-4 h-4 mr-2" />
                   Create Campaign
                 </Button>
