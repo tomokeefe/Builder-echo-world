@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
 import { CampaignWizard } from "@/components/CampaignWizard/CampaignWizard";
+import { TestModal } from "@/components/TestModal";
 import {
   Plus,
   Search,
@@ -56,6 +57,7 @@ const Campaigns = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
   const [showCampaignWizard, setShowCampaignWizard] = useState(false);
+  const [showTestModal, setShowTestModal] = useState(false);
 
   // Mock campaign data
   const [campaigns, setCampaigns] = useState<Campaign[]>([
@@ -380,6 +382,9 @@ const Campaigns = () => {
               <Plus className="w-4 h-4 mr-2" />
               Quick Test
             </Button>
+            <Button variant="outline" onClick={() => setShowTestModal(true)}>
+              Test Modal
+            </Button>
             <Button
               onClick={() => {
                 console.log("Opening Campaign Wizard");
@@ -657,6 +662,9 @@ const Campaigns = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Test Modal */}
+      <TestModal open={showTestModal} onOpenChange={setShowTestModal} />
 
       {/* Campaign Wizard */}
       <CampaignWizard
