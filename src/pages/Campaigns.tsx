@@ -27,6 +27,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useToast } from "@/components/ui/use-toast";
+import { CampaignWizard } from "@/components/CampaignWizard/CampaignWizard";
 import {
   Plus,
   Search,
@@ -44,16 +46,19 @@ import {
   Calendar,
   Settings,
   Eye,
+  Wand2,
 } from "lucide-react";
 import { Campaign, CampaignPerformance } from "@/types/campaign";
 
 const Campaigns = () => {
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [showCampaignWizard, setShowCampaignWizard] = useState(false);
 
   // Mock campaign data
-  const campaigns: Campaign[] = [
+  const [campaigns, setCampaigns] = useState<Campaign[]>([
     {
       id: "1",
       name: "Holiday Sale 2024",
@@ -189,7 +194,26 @@ const Campaigns = () => {
       updated: "2024-11-15",
       createdBy: "user2",
     },
-  ];
+  ]);
+
+  const handleCreateCampaign = (
+    campaignData: Omit<Campaign, "id" | "created" | "updated" | "createdBy">,
+  ) => {
+    const newCampaign: Campaign = {
+      ...campaignData,
+      id: Date.now().toString(),
+      created: new Date().toISOString().split("T")[0],
+      updated: new Date().toISOString().split("T")[0],
+      createdBy: "current-user",
+    };
+
+    setCampaigns((prev) => [newCampaign, ...prev]);
+
+    toast({
+      title: "Campaign Created Successfully! 🎉",
+      description: `${newCampaign.name} has been created and is ready to launch.`,
+    });
+  };
 
   const filteredCampaigns = campaigns.filter((campaign) => {
     const matchesSearch =
@@ -278,8 +302,8 @@ const Campaigns = () => {
               <BarChart3 className="w-4 h-4 mr-2" />
               Analytics
             </Button>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
+            <Button onClick={() => setShowCampaignWizard(true)}>
+              <Wand2 className="w-4 h-4 mr-2" />
               Create Campaign
             </Button>
           </div>
@@ -536,8 +560,8 @@ const Campaigns = () => {
                     ? "Try adjusting your search or filters."
                     : "Create your first campaign to get started."}
                 </p>
-                <Button>
-                  <Plus className="w-4 h-4 mr-2" />
+                <Button onClick={() => setShowCampaignWizard(true)}>
+                  <Wand2 className="w-4 h-4 mr-2" />
                   Create Campaign
                 </Button>
               </div>
@@ -545,6 +569,13 @@ const Campaigns = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Campaign Wizard */}
+      <CampaignWizard
+        open={showCampaignWizard}
+        onOpenChange={setShowCampaignWizard}
+        onCreateCampaign={handleCreateCampaign}
+      />
     </div>
   );
 };
