@@ -219,6 +219,76 @@ const Campaigns = () => {
     console.log("Campaign created successfully:", newCampaign);
   };
 
+  const createTestCampaign = () => {
+    const testCampaign: Omit<
+      Campaign,
+      "id" | "created" | "updated" | "createdBy"
+    > = {
+      name: "Test Campaign " + Date.now(),
+      description: "Test campaign created from quick action",
+      status: "draft",
+      type: "awareness",
+      audiences: [],
+      channels: [],
+      budget: {
+        total: 5000,
+        daily: 250,
+        spent: 0,
+        remaining: 5000,
+        currency: "USD",
+        optimizationGoal: "impressions",
+      },
+      schedule: {
+        startDate: new Date().toISOString().split("T")[0],
+        timezone: "UTC",
+        frequency: { impressions: 3, period: "day" },
+      },
+      creative: [],
+      targeting: {
+        locations: ["US"],
+        languages: ["en"],
+        devices: ["desktop", "mobile"],
+        operatingSystems: [],
+        browsers: [],
+        interests: [],
+        behaviors: [],
+        demographics: {
+          ageMin: 18,
+          ageMax: 65,
+          genders: ["all"],
+          incomes: [],
+        },
+        exclusions: { audiences: [], interests: [], behaviors: [] },
+      },
+      objectives: [
+        {
+          type: "awareness",
+          target: 100000,
+          current: 0,
+          unit: "impressions",
+        },
+      ],
+      performance: {
+        impressions: 0,
+        reach: 0,
+        clicks: 0,
+        conversions: 0,
+        spend: 0,
+        revenue: 0,
+        roas: 0,
+        ctr: 0,
+        cpm: 0,
+        cpc: 0,
+        cpa: 0,
+        conversionRate: 0,
+        frequency: 0,
+        qualityScore: 0,
+      },
+    };
+
+    handleCreateCampaign(testCampaign);
+  };
+
   const filteredCampaigns = campaigns.filter((campaign) => {
     const matchesSearch =
       campaign.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -305,6 +375,10 @@ const Campaigns = () => {
             <Button variant="outline">
               <BarChart3 className="w-4 h-4 mr-2" />
               Analytics
+            </Button>
+            <Button variant="outline" onClick={createTestCampaign}>
+              <Plus className="w-4 h-4 mr-2" />
+              Quick Test
             </Button>
             <Button
               onClick={() => {
