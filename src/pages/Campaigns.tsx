@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
 import { SimpleCampaignWizard } from "@/components/SimpleCampaignWizard";
-import { TestModal } from "@/components/TestModal";
+
 import {
   Plus,
   Search,
@@ -57,7 +57,6 @@ const Campaigns = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
   const [showCampaignWizard, setShowCampaignWizard] = useState(false);
-  const [showTestModal, setShowTestModal] = useState(false);
 
   // Mock campaign data
   const [campaigns, setCampaigns] = useState<Campaign[]>([
@@ -201,8 +200,6 @@ const Campaigns = () => {
   const handleCreateCampaign = (
     campaignData: Omit<Campaign, "id" | "created" | "updated" | "createdBy">,
   ) => {
-    console.log("Creating campaign with data:", campaignData);
-
     const newCampaign: Campaign = {
       ...campaignData,
       id: Date.now().toString(),
@@ -217,8 +214,6 @@ const Campaigns = () => {
       title: "Campaign Created Successfully! 🎉",
       description: `${newCampaign.name} has been created and is ready to launch.`,
     });
-
-    console.log("Campaign created successfully:", newCampaign);
   };
 
   const createTestCampaign = () => {
@@ -378,13 +373,7 @@ const Campaigns = () => {
               <BarChart3 className="w-4 h-4 mr-2" />
               Analytics
             </Button>
-            <Button variant="outline" onClick={createTestCampaign}>
-              <Plus className="w-4 h-4 mr-2" />
-              Quick Test
-            </Button>
-            <Button variant="outline" onClick={() => setShowTestModal(true)}>
-              Test Modal
-            </Button>
+
             <Button
               onClick={() => {
                 console.log("Opening Campaign Wizard");
@@ -662,9 +651,6 @@ const Campaigns = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Test Modal */}
-      <TestModal open={showTestModal} onOpenChange={setShowTestModal} />
 
       {/* Campaign Wizard */}
       <SimpleCampaignWizard
