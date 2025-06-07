@@ -632,12 +632,7 @@ const Campaigns = () => {
                     ? "Try adjusting your search or filters."
                     : "Create your first campaign to get started."}
                 </p>
-                <Button
-                  onClick={() => {
-                    console.log("Opening Campaign Wizard from empty state");
-                    setShowCampaignWizard(true);
-                  }}
-                >
+                <Button onClick={() => setShowCampaignWizard(true)}>
                   <Wand2 className="w-4 h-4 mr-2" />
                   Create Campaign
                 </Button>
