@@ -287,9 +287,9 @@ export const validateCSVFile = (file: File): string | null => {
     return "Please upload a CSV file";
   }
 
-  // Check file size (max 10MB)
-  if (file.size > 10 * 1024 * 1024) {
-    return "File size must be less than 10MB";
+  // Check file size (max 100MB)
+  if (file.size > 100 * 1024 * 1024) {
+    return "File size must be less than 100MB";
   }
 
   return null;
