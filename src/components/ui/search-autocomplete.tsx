@@ -71,6 +71,20 @@ const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+        e.preventDefault();
+        inputRef.current?.focus();
+        setIsOpen(true);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   // Debounced search
   useEffect(() => {
     const timer = setTimeout(() => {
