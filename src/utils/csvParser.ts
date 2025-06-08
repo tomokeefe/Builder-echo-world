@@ -169,7 +169,11 @@ export const mapCSVToCustomers = (
     }
 
     // Map purchase history
-    if (mapping.purchaseHistory && row[mapping.purchaseHistory]) {
+    if (
+      mapping.purchaseHistory &&
+      mapping.purchaseHistory !== "none" &&
+      row[mapping.purchaseHistory]
+    ) {
       customer.purchaseHistory = row[mapping.purchaseHistory];
     }
 
