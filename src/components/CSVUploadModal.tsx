@@ -243,7 +243,7 @@ export function CSVUploadModal({
                             : "Drag & drop CSV file here"}
                         </p>
                         <p className="text-muted-foreground">
-                          or click to select a file (max 10MB)
+                          or click to select a file (max 100MB)
                         </p>
                       </div>
                     </div>
