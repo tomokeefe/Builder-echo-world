@@ -193,6 +193,37 @@ const Sidebar = () => {
             </CollapsibleContent>
           </Collapsible>
 
+          {/* Clients Section */}
+          <Collapsible open={isClientsOpen} onOpenChange={setIsClientsOpen}>
+            <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg">
+              <div className="flex items-center gap-3">
+                <Building className="w-4 h-4" />
+                Clients
+              </div>
+              {isClientsOpen ? (
+                <ChevronDown className="w-4 h-4" />
+              ) : (
+                <ChevronRight className="w-4 h-4" />
+              )}
+            </CollapsibleTrigger>
+            <CollapsibleContent className="ml-7 mt-2 space-y-1">
+              {clientItems.map((item) => (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  className={`flex items-center justify-between px-3 py-2 rounded-md text-sm transition-colors ${
+                    isActive(item.href)
+                      ? "bg-primary/10 text-primary font-medium"
+                      : "text-gray-600 hover:bg-gray-50"
+                  }`}
+                >
+                  {item.title}
+                  <span className="text-xs text-gray-500">{item.count}</span>
+                </Link>
+              ))}
+            </CollapsibleContent>
+          </Collapsible>
+
           {/* Other Navigation Items */}
           <Link
             to="/integrations"
