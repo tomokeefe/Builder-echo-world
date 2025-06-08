@@ -38,6 +38,7 @@ const Sidebar = () => {
   const location = useLocation();
   const [isAudiencesOpen, setIsAudiencesOpen] = useState(true);
   const [isCampaignsOpen, setIsCampaignsOpen] = useState(false);
+  const [isClientsOpen, setIsClientsOpen] = useState(false);
 
   const navigationItems = [
     {
@@ -66,6 +67,13 @@ const Sidebar = () => {
     { title: "Active", href: "/campaigns?status=active", count: 7 },
     { title: "Scheduled", href: "/campaigns?status=scheduled", count: 3 },
     { title: "Completed", href: "/campaigns?status=completed", count: 5 },
+  ];
+
+  const clientItems = [
+    { title: "All Clients", href: "/clients", count: 24 },
+    { title: "Active", href: "/clients?status=active", count: 20 },
+    { title: "Onboarding", href: "/clients?status=onboarding", count: 3 },
+    { title: "Inactive", href: "/clients?status=inactive", count: 1 },
   ];
 
   const isActive = (href: string) => {
