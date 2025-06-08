@@ -91,14 +91,17 @@ const Clients: React.FC = () => {
   }, [filters]);
 
   const loadClients = async () => {
+    console.log("Loading clients...");
     setIsLoading(true);
     try {
       const clientsData = await clientService.getClients({
         ...filters,
         searchTerm,
       });
+      console.log("Clients loaded:", clientsData);
       setClients(clientsData);
     } catch (error) {
+      console.error("Error loading clients:", error);
       toast({
         title: "Error",
         description: "Failed to load clients",
