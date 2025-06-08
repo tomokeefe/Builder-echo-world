@@ -1,14 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useHotkeys } from "react-hotkeys-hook";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Search,
   X,
@@ -76,18 +70,6 @@ const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // Keyboard shortcuts
-  useHotkeys("ctrl+k, cmd+k", (e) => {
-    e.preventDefault();
-    inputRef.current?.focus();
-    setIsOpen(true);
-  });
-
-  useHotkeys("escape", () => {
-    setIsOpen(false);
-    inputRef.current?.blur();
-  });
 
   // Debounced search
   useEffect(() => {
@@ -225,6 +207,9 @@ const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
           handleSearch();
         }
         break;
+      case "Escape":
+        setIsOpen(false);
+        break;
       case "Tab":
         if (allSuggestions[selectedIndex]) {
           e.preventDefault();
@@ -316,42 +301,44 @@ const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
         )}
       </AnimatePresence>
 
-      <Popover open={isOpen} onOpenChange={setIsOpen}>
-        <PopoverTrigger asChild>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <Input
-              ref={inputRef}
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={handleKeyDown}
-              onFocus={() => setIsOpen(true)}
-              placeholder={placeholder}
-              className="pl-10 pr-20"
-            />
-            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
-              {query && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setQuery("")}
-                  className="h-6 w-6 p-0"
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              )}
-              <Badge variant="outline" className="text-xs px-1 py-0">
-                <CommandIcon className="w-3 h-3 mr-1" />K
-              </Badge>
-            </div>
-          </div>
-        </PopoverTrigger>
+      {/* Search Input */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <Input
+          ref={inputRef}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onFocus={() => setIsOpen(true)}
+          onBlur={() => setTimeout(() => setIsOpen(false), 200)}
+          placeholder={placeholder}
+          className="pl-10 pr-16"
+        />
+        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
+          {query && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setQuery("")}
+              className="h-6 w-6 p-0"
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          )}
+          <Badge variant="outline" className="text-xs px-1 py-0 hidden md:flex">
+            <CommandIcon className="w-3 h-3 mr-1" />K
+          </Badge>
+        </div>
+      </div>
 
-        <PopoverContent className="w-[400px] p-0" align="start" sideOffset={4}>
+      {/* Suggestions Dropdown */}
+      <AnimatePresence>
+        {isOpen && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="max-h-96 overflow-y-auto"
+            exit={{ opacity: 0, y: -10 }}
+            className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto"
           >
             {allSuggestions.length === 0 ? (
               <div className="p-4 text-center text-gray-500">
@@ -405,8 +392,8 @@ const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
               </div>
             )}
           </motion.div>
-        </PopoverContent>
-      </Popover>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
