@@ -21,12 +21,14 @@ import {
 import { Client, ClientFilters } from "@/types/client";
 import { clientService } from "@/services/clientService";
 import { useToast } from "@/hooks/use-toast";
+import AddClientModal from "@/components/AddClientModal";
 
 const Clients: React.FC = () => {
   console.log("Clients component rendering");
   const { toast } = useToast();
   const [clients, setClients] = useState<Client[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showAddModal, setShowAddModal] = useState(false);
   const [filters, setFilters] = useState<ClientFilters>({
     sortBy: "name",
     sortOrder: "asc",
@@ -53,6 +55,14 @@ const Clients: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleClientAdded = (newClient: Client) => {
+    setClients((prev) => [newClient, ...prev]);
+    toast({
+      title: "Success",
+      description: `${newClient.company} has been added to your clients`,
+    });
   };
 
   const getStatusIcon = (status: Client["status"]) => {
@@ -102,7 +112,7 @@ const Clients: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <Button>
+            <Button onClick={() => setShowAddModal(true)}>
               <Plus className="w-4 h-4 mr-2" />
               Add Client
             </Button>
@@ -328,6 +338,13 @@ const Clients: React.FC = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Add Client Modal */}
+        <AddClientModal
+          open={showAddModal}
+          onOpenChange={setShowAddModal}
+          onClientAdded={handleClientAdded}
+        />
       </div>
     </div>
   );
