@@ -186,7 +186,9 @@ const Index = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              Lookalike Audiences
+              <span style={{ color: "rgb(61, 153, 76)" }}>
+                Lookalike Audiences
+              </span>
             </h1>
             <p className="text-gray-600 mt-1">
               Create, manage, and analyze your custom audience segments
