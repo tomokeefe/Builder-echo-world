@@ -84,11 +84,6 @@ const Sidebar = () => {
           </div>
           <h1 className="text-xl font-semibold text-gray-900">Skydeo</h1>
         </div>
-
-        <Button className="w-full" size="sm">
-          <Plus className="w-4 h-4 mr-2" />
-          Create Audience
-        </Button>
       </div>
 
       {/* Search */}
