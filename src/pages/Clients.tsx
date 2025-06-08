@@ -72,6 +72,7 @@ import { clientService } from "@/services/clientService";
 import { useToast } from "@/hooks/use-toast";
 
 const Clients: React.FC = () => {
+  console.log("Clients component rendering");
   const { toast } = useToast();
   const [clients, setClients] = useState<Client[]>([]);
   const [stats, setStats] = useState<any>(null);
