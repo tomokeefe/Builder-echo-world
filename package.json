@@ -10,7 +10,7 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@hookform/resolvers": "^3.9.0",
+    "@hookform/resolvers": "^3.10.0",
     "@monaco-editor/react": "^4.7.0",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-alert-dialog": "^1.1.1",
@@ -72,7 +72,7 @@
     "react-dropzone": "^14.3.8",
     "react-flow-renderer": "^10.3.17",
     "react-grid-layout": "^1.5.1",
-    "react-hook-form": "^7.53.0",
+    "react-hook-form": "^7.57.0",
     "react-markdown": "^10.1.0",
     "react-resizable-panels": "^2.1.3",
     "react-router-dom": "^6.26.2",
@@ -86,7 +86,7 @@
     "three": "^0.176.0",
     "uuid": "^11.1.0",
     "vaul": "^0.9.3",
-    "zod": "^3.23.8"
+    "zod": "^3.25.56"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.15",
