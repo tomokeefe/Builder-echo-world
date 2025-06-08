@@ -23,15 +23,14 @@ const App = () => (
         <div className="flex h-screen bg-gray-100">
           <Sidebar />
           <main className="flex-1 overflow-auto">
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/campaigns" element={<Campaigns />} />
-            <Route path="/clients" element={<Clients />} />
-            <Route path="/integrations" element={<Integrations />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="/campaigns" element={<Campaigns />} />
+              <Route path="/clients" element={<Clients />} />
+              <Route path="/integrations" element={<Integrations />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
         </div>
