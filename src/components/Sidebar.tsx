@@ -31,6 +31,7 @@ import {
   Bell,
   Search,
   Circle,
+  Building,
 } from "lucide-react";
 
 const Sidebar = () => {
