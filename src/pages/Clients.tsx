@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import {
   Card,
   CardContent,
@@ -9,63 +8,15 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Progress } from "@/components/ui/progress";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import {
   Building,
   Users,
   DollarSign,
   TrendingUp,
-  Search,
-  Filter,
   Plus,
-  MoreVertical,
-  Eye,
-  Edit,
-  Trash2,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
-  Activity,
-  AlertCircle,
   CheckCircle,
   Clock,
-  Star,
-  Briefcase,
-  CreditCard,
+  AlertCircle,
 } from "lucide-react";
 import { Client, ClientFilters } from "@/types/client";
 import { clientService } from "@/services/clientService";
