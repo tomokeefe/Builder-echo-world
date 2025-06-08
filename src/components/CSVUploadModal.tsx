@@ -319,7 +319,7 @@ export function CSVUploadModal({
                             <SelectValue placeholder="Select name column" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">None</SelectItem>
+                            <SelectItem value="none">None</SelectItem>
                             {csvData.headers.map((header) => (
                               <SelectItem key={header} value={header}>
                                 {header}
