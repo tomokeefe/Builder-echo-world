@@ -30,6 +30,7 @@ import {
   LogOut,
   Bell,
   Search,
+  Circle,
 } from "lucide-react";
 
 const Sidebar = () => {
