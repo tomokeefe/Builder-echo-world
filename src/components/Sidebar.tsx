@@ -77,11 +77,11 @@ const Sidebar = () => {
     <div className="w-64 bg-white border-r border-gray-200 flex flex-col h-full">
       {/* Header */}
       <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <Target className="w-5 h-5 text-white" />
+            <Circle className="w-4 h-4 text-white" />
           </div>
-          <h1 className="text-xl font-semibold text-gray-900">Lookalike</h1>
+          <h1 className="text-xl font-semibold text-gray-900">Skydeo</h1>
         </div>
 
         <Button className="w-full" size="sm">
