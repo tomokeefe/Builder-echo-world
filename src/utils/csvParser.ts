@@ -114,7 +114,7 @@ export const mapCSVToCustomers = (
   return data.rows.map((row) => {
     const customer: CustomerRecord = {
       email:
-        row[mapping.email || ""] ||
+        (mapping.email && mapping.email !== "none" && row[mapping.email]) ||
         `customer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}@example.com`,
       demographics: {},
       interests: [],
@@ -122,26 +122,34 @@ export const mapCSVToCustomers = (
     };
 
     // Map basic fields
-    if (mapping.name && row[mapping.name]) {
+    if (mapping.name && mapping.name !== "none" && row[mapping.name]) {
       customer.name = row[mapping.name];
     }
 
     // Map demographics
-    if (mapping.age && row[mapping.age]) {
+    if (mapping.age && mapping.age !== "none" && row[mapping.age]) {
       customer.demographics.age = row[mapping.age];
     }
-    if (mapping.gender && row[mapping.gender]) {
+    if (mapping.gender && mapping.gender !== "none" && row[mapping.gender]) {
       customer.demographics.gender = row[mapping.gender];
     }
-    if (mapping.location && row[mapping.location]) {
+    if (
+      mapping.location &&
+      mapping.location !== "none" &&
+      row[mapping.location]
+    ) {
       customer.demographics.location = row[mapping.location];
     }
-    if (mapping.income && row[mapping.income]) {
+    if (mapping.income && mapping.income !== "none" && row[mapping.income]) {
       customer.demographics.income = row[mapping.income];
     }
 
     // Map interests (comma-separated)
-    if (mapping.interests && row[mapping.interests]) {
+    if (
+      mapping.interests &&
+      mapping.interests !== "none" &&
+      row[mapping.interests]
+    ) {
       customer.interests = row[mapping.interests]
         .split(",")
         .map((interest) => interest.trim())
@@ -149,7 +157,11 @@ export const mapCSVToCustomers = (
     }
 
     // Map behaviors (comma-separated)
-    if (mapping.behaviors && row[mapping.behaviors]) {
+    if (
+      mapping.behaviors &&
+      mapping.behaviors !== "none" &&
+      row[mapping.behaviors]
+    ) {
       customer.behaviors = row[mapping.behaviors]
         .split(",")
         .map((behavior) => behavior.trim())
