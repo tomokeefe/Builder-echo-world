@@ -268,302 +268,62 @@ const Clients: React.FC = () => {
             </CardContent>
           </Card>
         </div>
-        <Tabs defaultValue="all-clients" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="all-clients">All Clients</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="billing">Billing</TabsTrigger>
-            <TabsTrigger value="onboarding">Onboarding</TabsTrigger>
-          </TabsList>
-
-          {/* All Clients Tab */}
-          <TabsContent value="all-clients" className="space-y-6">
-            {/* Filters */}
-            <div className="flex items-center gap-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <Input
-                  placeholder="Search clients..."
-                  value={searchTerm}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  className="pl-10"
-                />
+        {/* Clients List */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Client Directory</CardTitle>
+            <CardDescription>
+              Manage and monitor all your client accounts
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <div className="text-center py-8">
+                <p>Loading clients...</p>
               </div>
-              <Select onValueChange={handleStatusFilter}>
-                <SelectTrigger className="w-40">
-                  <Filter className="w-4 h-4 mr-2" />
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="onboarding">Onboarding</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {clients.map((client) => (
+                  <Card key={client.id} className="hover:shadow-lg transition-shadow">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                          <span className="text-sm font-semibold text-blue-600">
+                            {client.name.split(' ').map(n => n[0]).join('')}
+                          </span>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold">{client.name}</h4>
+                          <p className="text-sm text-gray-600">{client.company}</p>
+                        </div>
+                      </div>
 
-            {/* Clients Table */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Client Directory</CardTitle>
-                <CardDescription>
-                  Manage and monitor all your client accounts
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead
-                        className="cursor-pointer hover:bg-gray-50"
-                        onClick={() => handleSort("name")}
-                      >
-                        Client
-                      </TableHead>
-                      <TableHead
-                        className="cursor-pointer hover:bg-gray-50"
-                        onClick={() => handleSort("company")}
-                      >
-                        Company
-                      </TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Tier</TableHead>
-                      <TableHead
-                        className="cursor-pointer hover:bg-gray-50"
-                        onClick={() => handleSort("monthlySpend")}
-                      >
-                        Monthly Spend
-                      </TableHead>
-                      <TableHead>Account Manager</TableHead>
-                      <TableHead
-                        className="cursor-pointer hover:bg-gray-50"
-                        onClick={() => handleSort("lastActivity")}
-                      >
-                        Last Activity
-                      </TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {clients.map((client) => (
-                      <TableRow key={client.id} className="hover:bg-gray-50">
-                        <TableCell>
-                          <div className="flex items-center gap-3">
-                            <Avatar>
-                              <AvatarFallback>
-                                {client.name
-                                  .split(" ")
-                                  .map((n) => n[0])
-                                  .join("")}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <div className="font-medium">{client.name}</div>
-                              <div className="text-sm text-gray-500">
-                                {client.email}
-                              </div>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div>
-                            <div className="font-medium">{client.company}</div>
-                            <div className="text-sm text-gray-500">
-                              {client.industry}
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-600">Status</span>
                           <Badge className={getStatusColor(client.status)}>
                             {getStatusIcon(client.status)}
-                            <span className="ml-1 capitalize">
-                              {client.status}
-                            </span>
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={getTierColor(client.tier)}>
-                            {client.tier === "enterprise" && (
-                              <Star className="w-3 h-3 mr-1" />
-                            )}
-                            {client.tier.charAt(0).toUpperCase() +
-                              client.tier.slice(1)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          {formatCurrency(client.monthlySpend)}
-                        </TableCell>
-                        <TableCell>{client.accountManager}</TableCell>
-                        <TableCell>
-                          {client.lastActivity
-                            ? formatDate(client.lastActivity)
-                            : "Never"}
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm">
-                                <MoreVertical className="w-4 h-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                              <DropdownMenuItem
-                                onClick={() => setSelectedClient(client)}
-                              >
-                                <Eye className="w-4 h-4 mr-2" />
-                                View Details
-                              </DropdownMenuItem>
-                              <DropdownMenuItem>
-                                <Edit className="w-4 h-4 mr-2" />
-                                Edit Client
-                              </DropdownMenuItem>
-                              <DropdownMenuItem>
-                                <Mail className="w-4 h-4 mr-2" />
-                                Send Email
-                              </DropdownMenuItem>
-                              <DropdownMenuItem className="text-red-600">
-                                <Trash2 className="w-4 h-4 mr-2" />
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Analytics Tab */}
-          <TabsContent value="analytics" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Top Industries</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {stats?.topIndustries.map((industry: any, index: number) => (
-                    <div
-                      key={industry.name}
-                      className="flex items-center justify-between py-2"
-                    >
-                      <span className="font-medium">{industry.name}</span>
-                      <div className="flex items-center gap-2">
-                        <div className="w-20 bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-blue-600 h-2 rounded-full"
-                            style={{
-                              width: `${(industry.count / stats.total) * 100}%`,
-                            }}
-                          />
-                        </div>
-                        <span className="text-sm text-gray-500">
-                          {industry.count}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recent Activity</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {stats?.recentActivities
-                      .slice(0, 5)
-                      .map((activity: any) => (
-                        <div
-                          key={activity.id}
-                          className="flex items-start gap-3"
-                        >
-                          <Activity className="w-4 h-4 text-blue-500 mt-0.5" />
-                          <div className="flex-1">
-                            <p className="text-sm font-medium">
-                              {activity.description}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              {formatDate(activity.timestamp)}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          {/* Billing Tab */}
-          <TabsContent value="billing" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Billing Overview</CardTitle>
-                <CardDescription>
-                  Monitor client billing and payment status
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8 text-gray-500">
-                  <CreditCard className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                  <p>Billing management coming soon</p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Onboarding Tab */}
-          <TabsContent value="onboarding" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Client Onboarding</CardTitle>
-                <CardDescription>
-                  Track new client onboarding progress
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {clients
-                    .filter((c) => c.status === "onboarding")
-                    .map((client) => (
-                      <div key={client.id} className="border rounded-lg p-4">
-                        <div className="flex items-center justify-between mb-3">
-                          <div>
-                            <h4 className="font-medium">{client.name}</h4>
-                            <p className="text-sm text-gray-600">
-                              {client.company}
-                            </p>
-                          </div>
-                          <Badge variant="outline">
-                            <Clock className="w-3 h-3 mr-1" />
-                            Onboarding
+                            <span className="ml-1 capitalize">{client.status}</span>
                           </Badge>
                         </div>
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span>Progress</span>
-                            <span>60%</span>
-                          </div>
-                          <Progress value={60} className="h-2" />
-                          <p className="text-xs text-gray-500">
-                            Started {formatDate(client.createdAt)}
-                          </p>
+
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-600">Monthly Spend</span>
+                          <span className="font-semibold">${client.monthlySpend.toLocaleString()}</span>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-600">Industry</span>
+                          <span className="text-sm">{client.industry}</span>
                         </div>
                       </div>
-                    ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-
-        {/* Client Details Modal */}
-        <Dialog
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
           open={selectedClient !== null}
           onOpenChange={(open) => !open && setSelectedClient(null)}
         >
