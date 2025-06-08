@@ -263,7 +263,7 @@ export function CSVUploadModal({
                     <li>
                       • Optional: interests and behaviors (comma-separated)
                     </li>
-                    <li>• File size limit: 10MB</li>
+                    <li>• File size limit: 100MB</li>
                   </ul>
                 </div>
               </CardContent>
