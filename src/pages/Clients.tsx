@@ -178,96 +178,96 @@ const Clients: React.FC = () => {
         </div>
 
         {/* Stats Overview */}
-        {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">
-                      Total Clients
-                    </p>
-                    <p className="text-2xl font-bold text-gray-900 mt-1">
-                      {stats.total}
-                    </p>
-                    <div className="flex items-center mt-2 text-sm text-gray-500">
-                      <span>{stats.active} active</span>
-                    </div>
-                  </div>
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <Building className="w-6 h-6 text-blue-600" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">
+                    Total Clients
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900 mt-1">
+                    {clients.length}
+                  </p>
+                  <div className="flex items-center mt-2 text-sm text-gray-500">
+                    <span>
+                      {clients.filter((c) => c.status === "active").length}{" "}
+                      active
+                    </span>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Building className="w-6 h-6 text-blue-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">
-                      Total Revenue
-                    </p>
-                    <p className="text-2xl font-bold text-gray-900 mt-1">
-                      {formatCurrency(stats.totalRevenue)}
-                    </p>
-                    <div className="flex items-center mt-2 text-sm text-green-600">
-                      <TrendingUp className="w-3 h-3 mr-1" />
-                      <span>+12.5% from last month</span>
-                    </div>
-                  </div>
-                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                    <DollarSign className="w-6 h-6 text-green-600" />
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">
+                    Total Revenue
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900 mt-1">
+                    $267,500
+                  </p>
+                  <div className="flex items-center mt-2 text-sm text-green-600">
+                    <TrendingUp className="w-3 h-3 mr-1" />
+                    <span>+12.5% from last month</span>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                  <DollarSign className="w-6 h-6 text-green-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">
-                      Avg Monthly Spend
-                    </p>
-                    <p className="text-2xl font-bold text-gray-900 mt-1">
-                      {formatCurrency(stats.averageMonthlySpend)}
-                    </p>
-                    <div className="flex items-center mt-2 text-sm text-gray-500">
-                      <span>per client</span>
-                    </div>
-                  </div>
-                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <CreditCard className="w-6 h-6 text-purple-600" />
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">
+                    Avg Monthly Spend
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900 mt-1">
+                    $8,667
+                  </p>
+                  <div className="flex items-center mt-2 text-sm text-gray-500">
+                    <span>per client</span>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <Users className="w-6 h-6 text-purple-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">
-                      Onboarding
-                    </p>
-                    <p className="text-2xl font-bold text-gray-900 mt-1">
-                      {stats.onboarding}
-                    </p>
-                    <div className="flex items-center mt-2 text-sm text-yellow-600">
-                      <Clock className="w-3 h-3 mr-1" />
-                      <span>In progress</span>
-                    </div>
-                  </div>
-                  <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                    <Users className="w-6 h-6 text-yellow-600" />
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">
+                    Onboarding
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900 mt-1">
+                    {clients.filter((c) => c.status === "onboarding").length}
+                  </p>
+                  <div className="flex items-center mt-2 text-sm text-yellow-600">
+                    <Clock className="w-3 h-3 mr-1" />
+                    <span>In progress</span>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
+                <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                  <Users className="w-6 h-6 text-yellow-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
         <Tabs defaultValue="all-clients" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="all-clients">All Clients</TabsTrigger>
