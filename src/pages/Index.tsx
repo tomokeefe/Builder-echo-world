@@ -180,7 +180,10 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50/50 p-6">
+    <div
+      className="min-h-screen p-6"
+      style={{ backgroundColor: "rgba(248, 251, 247, 1)" }}
+    >
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Page Header */}
         <div className="flex items-center justify-between">
