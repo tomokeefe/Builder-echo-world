@@ -186,7 +186,9 @@ const Analytics = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              Analytics Dashboard
+              <span style={{ color: "rgb(61, 153, 76)" }}>
+                Analytics Dashboard
+              </span>
             </h1>
             <p className="text-gray-600 mt-1">
               Comprehensive insights into your audience performance
