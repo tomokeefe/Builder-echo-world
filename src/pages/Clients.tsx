@@ -26,29 +26,21 @@ const Clients: React.FC = () => {
   console.log("Clients component rendering");
   const { toast } = useToast();
   const [clients, setClients] = useState<Client[]>([]);
-  const [stats, setStats] = useState<any>(null);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState<ClientFilters>({
     sortBy: "name",
     sortOrder: "asc",
   });
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showAddDialog, setShowAddDialog] = useState(false);
 
   useEffect(() => {
     loadClients();
-    loadStats();
   }, [filters]);
 
   const loadClients = async () => {
     console.log("Loading clients...");
     setIsLoading(true);
     try {
-      const clientsData = await clientService.getClients({
-        ...filters,
-        searchTerm,
-      });
+      const clientsData = await clientService.getClients(filters);
       console.log("Clients loaded:", clientsData);
       setClients(clientsData);
     } catch (error) {
@@ -61,36 +53,6 @@ const Clients: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const loadStats = async () => {
-    try {
-      const statsData = await clientService.getClientStats();
-      setStats(statsData);
-    } catch (error) {
-      console.error("Failed to load client stats:", error);
-    }
-  };
-
-  const handleSearch = (value: string) => {
-    setSearchTerm(value);
-    setFilters((prev) => ({ ...prev, searchTerm: value }));
-  };
-
-  const handleStatusFilter = (status: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      status: status === "all" ? undefined : status,
-    }));
-  };
-
-  const handleSort = (sortBy: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      sortBy: sortBy as any,
-      sortOrder:
-        prev.sortBy === sortBy && prev.sortOrder === "asc" ? "desc" : "asc",
-    }));
   };
 
   const getStatusIcon = (status: Client["status"]) => {
@@ -117,36 +79,6 @@ const Clients: React.FC = () => {
       default:
         return "bg-gray-100 text-gray-800 border-gray-200";
     }
-  };
-
-  const getTierColor = (tier: Client["tier"]) => {
-    switch (tier) {
-      case "enterprise":
-        return "bg-purple-100 text-purple-800 border-purple-200";
-      case "premium":
-        return "bg-blue-100 text-blue-800 border-blue-200";
-      case "basic":
-        return "bg-gray-100 text-gray-800 border-gray-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
   };
 
   return (
@@ -268,12 +200,14 @@ const Clients: React.FC = () => {
             </CardContent>
           </Card>
         </div>
+
         {/* Clients List */}
         <Card>
           <CardHeader>
             <CardTitle>Client Directory</CardTitle>
             <CardDescription>
-              Manage and monitor all your client accounts
+              Manage and monitor all your client accounts ({clients.length}{" "}
+              total clients)
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -284,17 +218,25 @@ const Clients: React.FC = () => {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {clients.map((client) => (
-                  <Card key={client.id} className="hover:shadow-lg transition-shadow">
+                  <Card
+                    key={client.id}
+                    className="hover:shadow-lg transition-shadow"
+                  >
                     <CardContent className="p-4">
                       <div className="flex items-center gap-3 mb-3">
                         <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                           <span className="text-sm font-semibold text-blue-600">
-                            {client.name.split(' ').map(n => n[0]).join('')}
+                            {client.name
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")}
                           </span>
                         </div>
                         <div className="flex-1">
                           <h4 className="font-semibold">{client.name}</h4>
-                          <p className="text-sm text-gray-600">{client.company}</p>
+                          <p className="text-sm text-gray-600">
+                            {client.company}
+                          </p>
                         </div>
                       </div>
 
@@ -303,18 +245,42 @@ const Clients: React.FC = () => {
                           <span className="text-sm text-gray-600">Status</span>
                           <Badge className={getStatusColor(client.status)}>
                             {getStatusIcon(client.status)}
-                            <span className="ml-1 capitalize">{client.status}</span>
+                            <span className="ml-1 capitalize">
+                              {client.status}
+                            </span>
                           </Badge>
                         </div>
 
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">Monthly Spend</span>
-                          <span className="font-semibold">${client.monthlySpend.toLocaleString()}</span>
+                          <span className="text-sm text-gray-600">
+                            Monthly Spend
+                          </span>
+                          <span className="font-semibold">
+                            ${client.monthlySpend.toLocaleString()}
+                          </span>
                         </div>
 
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">Industry</span>
+                          <span className="text-sm text-gray-600">
+                            Industry
+                          </span>
                           <span className="text-sm">{client.industry}</span>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-600">
+                            Account Manager
+                          </span>
+                          <span className="text-sm">
+                            {client.accountManager}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-600">Tier</span>
+                          <Badge variant="outline" className="capitalize">
+                            {client.tier}
+                          </Badge>
                         </div>
                       </div>
                     </CardContent>
@@ -324,129 +290,44 @@ const Clients: React.FC = () => {
             )}
           </CardContent>
         </Card>
-          open={selectedClient !== null}
-          onOpenChange={(open) => !open && setSelectedClient(null)}
-        >
-          <DialogContent className="max-w-4xl">
-            <DialogHeader>
-              <DialogTitle>Client Details</DialogTitle>
-            </DialogHeader>
-            {selectedClient && (
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-4">
-                      <Avatar className="w-16 h-16">
-                        <AvatarFallback className="text-lg">
-                          {selectedClient.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <h3 className="text-xl font-semibold">
-                          {selectedClient.name}
-                        </h3>
-                        <p className="text-gray-600">
-                          {selectedClient.company}
-                        </p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge
-                            className={getStatusColor(selectedClient.status)}
-                          >
-                            {selectedClient.status}
-                          </Badge>
-                          <Badge className={getTierColor(selectedClient.tier)}>
-                            {selectedClient.tier}
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
 
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <Mail className="w-4 h-4 text-gray-500" />
-                        <span className="text-sm">{selectedClient.email}</span>
-                      </div>
-                      {selectedClient.phone && (
-                        <div className="flex items-center gap-2">
-                          <Phone className="w-4 h-4 text-gray-500" />
-                          <span className="text-sm">
-                            {selectedClient.phone}
-                          </span>
-                        </div>
-                      )}
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-gray-500" />
-                        <span className="text-sm">
-                          {selectedClient.address.city},{" "}
-                          {selectedClient.address.country}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Briefcase className="w-4 h-4 text-gray-500" />
-                        <span className="text-sm">
-                          {selectedClient.industry}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+        {/* Client Features Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Card>
+            <CardContent className="p-6 text-center">
+              <Building className="w-12 h-12 mx-auto mb-4 text-blue-500" />
+              <h3 className="text-lg font-semibold mb-2">Client Profiles</h3>
+              <p className="text-gray-600 text-sm">
+                Comprehensive client information including contact details,
+                billing, and performance metrics.
+              </p>
+            </CardContent>
+          </Card>
 
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <Card>
-                        <CardContent className="p-4 text-center">
-                          <DollarSign className="w-8 h-8 mx-auto mb-2 text-green-500" />
-                          <p className="text-2xl font-bold">
-                            {formatCurrency(selectedClient.monthlySpend)}
-                          </p>
-                          <p className="text-sm text-gray-600">Monthly Spend</p>
-                        </CardContent>
-                      </Card>
-                      <Card>
-                        <CardContent className="p-4 text-center">
-                          <TrendingUp className="w-8 h-8 mx-auto mb-2 text-blue-500" />
-                          <p className="text-2xl font-bold">
-                            {selectedClient.metrics.averageROAS.toFixed(1)}x
-                          </p>
-                          <p className="text-sm text-gray-600">Average ROAS</p>
-                        </CardContent>
-                      </Card>
-                    </div>
+          <Card>
+            <CardContent className="p-6 text-center">
+              <TrendingUp className="w-12 h-12 mx-auto mb-4 text-green-500" />
+              <h3 className="text-lg font-semibold mb-2">
+                Performance Tracking
+              </h3>
+              <p className="text-gray-600 text-sm">
+                Monitor client ROI, campaign performance, and revenue growth
+                over time.
+              </p>
+            </CardContent>
+          </Card>
 
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <p className="text-gray-600">Active Audiences</p>
-                        <p className="font-semibold">
-                          {selectedClient.metrics.activeAudiences}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-gray-600">Active Campaigns</p>
-                        <p className="font-semibold">
-                          {selectedClient.metrics.activeCampaigns}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-gray-600">Total Conversions</p>
-                        <p className="font-semibold">
-                          {selectedClient.metrics.totalConversions.toLocaleString()}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-gray-600">Lifetime Value</p>
-                        <p className="font-semibold">
-                          {formatCurrency(selectedClient.totalLifetimeValue)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
+          <Card>
+            <CardContent className="p-6 text-center">
+              <Users className="w-12 h-12 mx-auto mb-4 text-purple-500" />
+              <h3 className="text-lg font-semibold mb-2">Team Management</h3>
+              <p className="text-gray-600 text-sm">
+                Manage client team members, roles, and permissions for each
+                account.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
