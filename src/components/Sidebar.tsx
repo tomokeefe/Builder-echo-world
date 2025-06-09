@@ -204,6 +204,12 @@ const Sidebar = () => {
       icon: BarChart3,
       badge: null,
     },
+    {
+      title: "Orders",
+      href: "/orders",
+      icon: ShoppingCart,
+      badge: "12",
+    },
   ];
 
   const audienceItems = [
