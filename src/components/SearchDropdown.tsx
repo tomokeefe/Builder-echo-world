@@ -5,13 +5,11 @@ import {
   Search,
   Clock,
   TrendingUp,
-  Zap,
   ChevronRight,
   FileText,
   Users,
   BarChart3,
   Target,
-  Settings,
   X,
   Sparkles,
   ArrowUpRight,
@@ -43,7 +41,6 @@ export function SearchDropdown() {
     query,
     results,
     isLoading,
-    suggestions,
     recentSearches,
     popularSearches,
     setQuery,
@@ -103,7 +100,6 @@ export function SearchDropdown() {
       // Handle different result types
       switch (result.id) {
         case "ai-create-audience":
-          // Open create audience modal
           console.log("Open create audience modal");
           break;
         case "ai-view-analytics":
@@ -141,8 +137,6 @@ export function SearchDropdown() {
         return <Clock className="w-4 h-4 text-gray-400" />;
       case "popular":
         return <TrendingUp className="w-4 h-4 text-blue-500" />;
-      case "filter":
-        return <Settings className="w-4 h-4 text-orange-500" />;
       default:
         // Category-based icons
         if (category?.includes("Client")) {
@@ -165,21 +159,24 @@ export function SearchDropdown() {
     return result.category || "Result";
   };
 
+  // Memoize display results to prevent unnecessary re-computations
   const displayResults = useMemo(() => {
-    return query.trim()
-      ? results
-      : [
-          ...recentSearches.slice(0, 3).map((search) => ({
-            id: `recent-${search}`,
-            type: "recent",
-            text: search,
-          })),
-          ...popularSearches.slice(0, 3).map((search) => ({
-            id: `popular-${search}`,
-            type: "popular",
-            text: search,
-          })),
-        ];
+    if (query.trim()) {
+      return results;
+    }
+
+    return [
+      ...recentSearches.slice(0, 3).map((search) => ({
+        id: `recent-${search}`,
+        type: "recent",
+        text: search,
+      })),
+      ...popularSearches.slice(0, 3).map((search) => ({
+        id: `popular-${search}`,
+        type: "popular",
+        text: search,
+      })),
+    ];
   }, [query, results, recentSearches, popularSearches]);
 
   return (
