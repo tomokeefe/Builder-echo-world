@@ -159,11 +159,13 @@ export const EnhancedChart: React.FC<EnhancedChartProps> = ({
 
   // Calculate trend for display
   const trend = useMemo(() => {
-    if (!config.data || config.data.length < 2) return null;
+    if (!chartConfig.data || chartConfig.data.length < 2) return null;
 
-    const yKey = Array.isArray(config.yKey) ? config.yKey[0] : config.yKey;
-    const firstValue = config.data[0][yKey];
-    const lastValue = config.data[config.data.length - 1][yKey];
+    const yKey = Array.isArray(chartConfig.yKey)
+      ? chartConfig.yKey[0]
+      : chartConfig.yKey;
+    const firstValue = chartConfig.data[0][yKey];
+    const lastValue = chartConfig.data[chartConfig.data.length - 1][yKey];
 
     if (firstValue && lastValue) {
       const change = ((lastValue - firstValue) / firstValue) * 100;
