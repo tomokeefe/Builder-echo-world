@@ -260,7 +260,14 @@ const Analytics = () => {
               >
                 <Card className="transition-all duration-200">
                   <CardContent className="p-4 md:p-6">
-                    <div className="flex items-center justify-between">
+                    {isLoading ? (
+                      <div className="space-y-3">
+                        <Skeleton className="h-4 w-24" />
+                        <Skeleton className="h-8 w-16" />
+                        <Skeleton className="h-4 w-20" />
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-gray-600">
                           {metric.name}
