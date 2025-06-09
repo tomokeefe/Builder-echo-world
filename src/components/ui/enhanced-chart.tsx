@@ -175,7 +175,7 @@ export const EnhancedChart: React.FC<EnhancedChartProps> = ({
       };
     }
     return null;
-  }, [config.data, config.yKey]);
+  }, [chartConfig.data, chartConfig.yKey]);
 
   const renderChart = () => {
     if (loading) {
