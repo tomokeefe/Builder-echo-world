@@ -75,13 +75,29 @@ export interface ChartConfig {
 export interface EnhancedChartProps {
   title?: string;
   description?: string;
-  config: ChartConfig;
+  config?: ChartConfig;
   loading?: boolean;
   error?: string;
   className?: string;
   showControls?: boolean;
   onExport?: () => void;
   onRefresh?: () => void;
+  // Individual props for backward compatibility
+  data?: ChartDataPoint[];
+  type?: "line" | "area" | "bar" | "pie";
+  xKey?: string;
+  yKey?: string | string[];
+  colors?: string[];
+  showGrid?: boolean;
+  showLegend?: boolean;
+  showBrush?: boolean;
+  showTooltip?: boolean;
+  height?: number;
+  animate?: boolean;
+  interactive?: boolean;
+  drillDownEnabled?: boolean;
+  animated?: boolean;
+  subtitle?: string;
 }
 
 const defaultColors = [
