@@ -567,7 +567,7 @@ const Sidebar = () => {
       </div>
 
       {/* User Profile - Sticky at bottom */}
-      <div className="mt-auto p-4 border-t border-gray-200 bg-white">
+      <div className="flex-shrink-0 p-4 border-t border-gray-200 bg-white">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
