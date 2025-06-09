@@ -213,7 +213,7 @@ export const useOnboarding = () => {
     }
   }, [state.currentStepIndex]);
 
-  const completeTour = useCallback(() => {
+  const completeTour = React.useCallback(() => {
     if (!state.activeTour) return;
 
     setState((prev) => ({
