@@ -396,7 +396,7 @@ mike.johnson@example.com,Mike Johnson,45,Male,Texas,finance;cars,research;compar
                 <AlertDescription>
                   <div className="space-y-1">
                     {validation.suggestions.map((suggestion, index) => (
-                      <div key={index}>�� {suggestion}</div>
+                      <div key={index}>💡 {suggestion}</div>
                     ))}
                   </div>
                 </AlertDescription>
@@ -760,7 +760,7 @@ mike.johnson@example.com,Mike Johnson,45,Male,Texas,finance;cars,research;compar
                             <SelectValue placeholder="Select interests column" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">None</SelectItem>
+                            <SelectItem value="none">None</SelectItem>
                             {csvData.headers.map((header) => (
                               <SelectItem key={header} value={header}>
                                 {header}
