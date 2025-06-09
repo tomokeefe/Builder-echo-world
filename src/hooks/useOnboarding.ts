@@ -188,7 +188,7 @@ export const useOnboarding = () => {
     [state.completedTours, state.skippedTours],
   );
 
-  const nextStep = useCallback(() => {
+  const nextStep = React.useCallback(() => {
     if (!state.activeTour) return;
 
     const tour = tours[state.activeTour];
