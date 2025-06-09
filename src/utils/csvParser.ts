@@ -1,3 +1,5 @@
+import Papa from "papaparse";
+
 export interface CSVRow {
   [key: string]: string;
 }
@@ -6,6 +8,8 @@ export interface ParsedCSVData {
   headers: string[];
   rows: CSVRow[];
   totalRows: number;
+  errors: string[];
+  warnings: string[];
 }
 
 export interface ColumnMapping {
@@ -35,150 +39,372 @@ export interface CustomerRecord {
   purchaseHistory?: string;
 }
 
+export interface ValidationResult {
+  isValid: boolean;
+  errors: string[];
+  warnings: string[];
+  suggestions: string[];
+}
+
+// Common column name patterns for auto-detection
+const COLUMN_PATTERNS = {
+  email: /^(email|e-?mail|email_address|contact|user_email)$/i,
+  name: /^(name|full_name|customer_name|first_name|last_name|user_name)$/i,
+  age: /^(age|user_age|customer_age)$/i,
+  gender: /^(gender|sex)$/i,
+  location: /^(location|city|state|country|address|region)$/i,
+  income: /^(income|salary|revenue|annual_income)$/i,
+  interests: /^(interests|hobbies|preferences|likes)$/i,
+  behaviors: /^(behaviors|behaviour|activities|actions)$/i,
+  purchaseHistory: /^(purchase_history|purchases|orders|transactions)$/i,
+};
+
 export const parseCSV = async (file: File): Promise<ParsedCSVData> => {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
+    if (!file) {
+      reject(new Error("No file provided"));
+      return;
+    }
 
-    reader.onload = (event) => {
-      try {
-        const csvText = event.target?.result as string;
-        const lines = csvText.split("\n").filter((line) => line.trim() !== "");
+    const errors: string[] = [];
+    const warnings: string[] = [];
 
-        if (lines.length === 0) {
-          reject(new Error("CSV file is empty"));
-          return;
-        }
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      transformHeader: (header: string) => header.trim(),
+      transform: (value: string) => value.trim(),
+      complete: (results) => {
+        try {
+          // Check for parsing errors
+          if (results.errors.length > 0) {
+            const criticalErrors = results.errors.filter(
+              (error) => error.type === "Delimiter",
+            );
+            if (criticalErrors.length > 0) {
+              reject(
+                new Error("Invalid CSV format: " + criticalErrors[0].message),
+              );
+              return;
+            }
 
-        // Parse headers
-        const headers = parseCSVLine(lines[0]);
-
-        // Parse rows
-        const rows: CSVRow[] = [];
-        for (let i = 1; i < lines.length; i++) {
-          const values = parseCSVLine(lines[i]);
-          if (values.length > 0) {
-            const row: CSVRow = {};
-            headers.forEach((header, index) => {
-              row[header] = values[index] || "";
+            // Add non-critical errors as warnings
+            results.errors.forEach((error) => {
+              if (error.type !== "Delimiter") {
+                warnings.push(`Row ${error.row + 1}: ${error.message}`);
+              }
             });
-            rows.push(row);
           }
+
+          const headers = results.meta.fields || [];
+          const rows = results.data as CSVRow[];
+
+          // Validate CSV structure
+          if (headers.length === 0) {
+            reject(new Error("No headers found in CSV file"));
+            return;
+          }
+
+          if (rows.length === 0) {
+            reject(new Error("No data rows found in CSV file"));
+            return;
+          }
+
+          // Check for empty headers
+          const emptyHeaders = headers.filter(
+            (header) => !header || header.trim() === "",
+          );
+          if (emptyHeaders.length > 0) {
+            warnings.push(
+              `Found ${emptyHeaders.length} empty column header(s)`,
+            );
+          }
+
+          // Check for duplicate headers
+          const duplicateHeaders = headers.filter(
+            (header, index) => headers.indexOf(header) !== index,
+          );
+          if (duplicateHeaders.length > 0) {
+            warnings.push(
+              `Duplicate column headers found: ${duplicateHeaders.join(", ")}`,
+            );
+          }
+
+          // Filter out completely empty rows
+          const validRows = rows.filter((row) =>
+            Object.values(row).some((value) => value && value.trim() !== ""),
+          );
+
+          if (validRows.length < rows.length) {
+            warnings.push(
+              `Removed ${rows.length - validRows.length} empty rows`,
+            );
+          }
+
+          resolve({
+            headers: headers.filter((header) => header && header.trim() !== ""),
+            rows: validRows,
+            totalRows: validRows.length,
+            errors,
+            warnings,
+          });
+        } catch (error) {
+          reject(
+            new Error(
+              "Failed to process CSV data: " + (error as Error).message,
+            ),
+          );
         }
-
-        resolve({
-          headers,
-          rows,
-          totalRows: rows.length,
-        });
-      } catch (error) {
-        reject(
-          new Error("Failed to parse CSV file: " + (error as Error).message),
-        );
-      }
-    };
-
-    reader.onerror = () => {
-      reject(new Error("Failed to read file"));
-    };
-
-    reader.readAsText(file);
+      },
+      error: (error) => {
+        reject(new Error("Failed to parse CSV file: " + error.message));
+      },
+    });
   });
 };
 
-const parseCSVLine = (line: string): string[] => {
-  const result: string[] = [];
-  let current = "";
-  let inQuotes = false;
+export const validateCSVFile = (file: File): string | null => {
+  // Check file type
+  if (!file.name.toLowerCase().endsWith(".csv")) {
+    return "Please upload a CSV file (.csv extension required)";
+  }
 
-  for (let i = 0; i < line.length; i++) {
-    const char = line[i];
+  // Check file size (max 100MB)
+  if (file.size > 100 * 1024 * 1024) {
+    return "File size must be less than 100MB";
+  }
 
-    if (char === '"') {
-      inQuotes = !inQuotes;
-    } else if (char === "," && !inQuotes) {
-      result.push(current.trim());
-      current = "";
+  // Check minimum file size (should be at least 1KB for meaningful data)
+  if (file.size < 1024) {
+    return "File appears to be too small. Please ensure it contains data.";
+  }
+
+  return null;
+};
+
+export const validateCSVData = (data: ParsedCSVData): ValidationResult => {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const suggestions: string[] = [];
+
+  // Check for minimum data requirements
+  if (data.totalRows < 1) {
+    errors.push("CSV file must contain at least 1 data row");
+  }
+
+  if (data.headers.length < 1) {
+    errors.push("CSV file must contain at least 1 column");
+  }
+
+  // Check for potential email columns
+  const potentialEmailColumns = data.headers.filter(
+    (header) =>
+      COLUMN_PATTERNS.email.test(header) ||
+      header.toLowerCase().includes("email") ||
+      header.toLowerCase().includes("contact"),
+  );
+
+  if (potentialEmailColumns.length === 0) {
+    // Check if any column contains email-like data
+    const emailLikeData = data.headers.some((header) => {
+      const sampleValues = data.rows
+        .slice(0, 5)
+        .map((row) => row[header] || "");
+      return sampleValues.some(
+        (value) => value.includes("@") && value.includes("."),
+      );
+    });
+
+    if (!emailLikeData) {
+      warnings.push(
+        "No obvious email column detected. You'll need to specify which column contains customer identifiers.",
+      );
     } else {
-      current += char;
+      suggestions.push(
+        "Detected email-like data in your CSV. Make sure to map the correct column during setup.",
+      );
     }
   }
 
-  result.push(current.trim());
-  return result.map((field) => field.replace(/^"|"$/g, ""));
+  // Check data quality
+  const sampleSize = Math.min(10, data.totalRows);
+  const sampleRows = data.rows.slice(0, sampleSize);
+
+  // Calculate filled data percentage
+  let totalCells = 0;
+  let filledCells = 0;
+
+  sampleRows.forEach((row) => {
+    data.headers.forEach((header) => {
+      totalCells++;
+      if (row[header] && row[header].trim() !== "") {
+        filledCells++;
+      }
+    });
+  });
+
+  const fillPercentage = (filledCells / totalCells) * 100;
+
+  if (fillPercentage < 30) {
+    warnings.push("Low data density detected. Many cells appear to be empty.");
+  } else if (fillPercentage > 80) {
+    suggestions.push(
+      "Good data density detected. Your CSV appears to be well-formatted.",
+    );
+  }
+
+  // Check for large datasets
+  if (data.totalRows > 10000) {
+    suggestions.push(
+      "Large dataset detected. Processing may take a few moments.",
+    );
+  }
+
+  // Check for common formatting issues
+  data.headers.forEach((header) => {
+    if (header.includes(" ") && !header.includes("_")) {
+      suggestions.push(
+        `Consider using underscores instead of spaces in column "${header}" for better compatibility.`,
+      );
+    }
+  });
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    warnings,
+    suggestions,
+  };
+};
+
+export const autoDetectColumnMapping = (
+  headers: string[],
+): Partial<ColumnMapping> => {
+  const mapping: Partial<ColumnMapping> = {};
+
+  headers.forEach((header) => {
+    const lowerHeader = header.toLowerCase().trim();
+
+    // Try to auto-detect column types
+    for (const [fieldType, pattern] of Object.entries(COLUMN_PATTERNS)) {
+      if (pattern.test(header)) {
+        mapping[fieldType as keyof ColumnMapping] = header;
+        break;
+      }
+    }
+  });
+
+  return mapping;
 };
 
 export const mapCSVToCustomers = (
   data: ParsedCSVData,
   mapping: ColumnMapping,
 ): CustomerRecord[] => {
-  return data.rows.map((row) => {
-    const customer: CustomerRecord = {
-      email:
-        (mapping.email && mapping.email !== "none" && row[mapping.email]) ||
-        `customer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}@example.com`,
-      demographics: {},
-      interests: [],
-      behaviors: [],
-    };
+  const customers: CustomerRecord[] = [];
+  const processedEmails = new Set<string>();
 
-    // Map basic fields
-    if (mapping.name && mapping.name !== "none" && row[mapping.name]) {
-      customer.name = row[mapping.name];
-    }
+  data.rows.forEach((row, index) => {
+    try {
+      // Get email/identifier
+      let email = "";
+      if (mapping.email && mapping.email !== "none" && row[mapping.email]) {
+        email = row[mapping.email].toLowerCase().trim();
+      }
 
-    // Map demographics
-    if (mapping.age && mapping.age !== "none" && row[mapping.age]) {
-      customer.demographics.age = row[mapping.age];
-    }
-    if (mapping.gender && mapping.gender !== "none" && row[mapping.gender]) {
-      customer.demographics.gender = row[mapping.gender];
-    }
-    if (
-      mapping.location &&
-      mapping.location !== "none" &&
-      row[mapping.location]
-    ) {
-      customer.demographics.location = row[mapping.location];
-    }
-    if (mapping.income && mapping.income !== "none" && row[mapping.income]) {
-      customer.demographics.income = row[mapping.income];
-    }
+      // If no email provided, generate a unique identifier
+      if (!email || !isValidEmail(email)) {
+        email = `customer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}@imported.local`;
+      }
 
-    // Map interests (comma-separated)
-    if (
-      mapping.interests &&
-      mapping.interests !== "none" &&
-      row[mapping.interests]
-    ) {
-      customer.interests = row[mapping.interests]
-        .split(",")
-        .map((interest) => interest.trim())
-        .filter((interest) => interest.length > 0);
-    }
+      // Skip duplicate emails
+      if (processedEmails.has(email)) {
+        return;
+      }
+      processedEmails.add(email);
 
-    // Map behaviors (comma-separated)
-    if (
-      mapping.behaviors &&
-      mapping.behaviors !== "none" &&
-      row[mapping.behaviors]
-    ) {
-      customer.behaviors = row[mapping.behaviors]
-        .split(",")
-        .map((behavior) => behavior.trim())
-        .filter((behavior) => behavior.length > 0);
-    }
+      const customer: CustomerRecord = {
+        email,
+        demographics: {},
+        interests: [],
+        behaviors: [],
+      };
 
-    // Map purchase history
-    if (
-      mapping.purchaseHistory &&
-      mapping.purchaseHistory !== "none" &&
-      row[mapping.purchaseHistory]
-    ) {
-      customer.purchaseHistory = row[mapping.purchaseHistory];
-    }
+      // Map basic fields
+      if (mapping.name && mapping.name !== "none" && row[mapping.name]) {
+        customer.name = cleanString(row[mapping.name]);
+      }
 
-    return customer;
+      // Map demographics
+      if (mapping.age && mapping.age !== "none" && row[mapping.age]) {
+        const age = cleanString(row[mapping.age]);
+        if (age && isValidAge(age)) {
+          customer.demographics.age = age;
+        }
+      }
+
+      if (mapping.gender && mapping.gender !== "none" && row[mapping.gender]) {
+        const gender = cleanString(row[mapping.gender]);
+        if (gender) {
+          customer.demographics.gender = normalizeGender(gender);
+        }
+      }
+
+      if (
+        mapping.location &&
+        mapping.location !== "none" &&
+        row[mapping.location]
+      ) {
+        const location = cleanString(row[mapping.location]);
+        if (location) {
+          customer.demographics.location = location;
+        }
+      }
+
+      if (mapping.income && mapping.income !== "none" && row[mapping.income]) {
+        const income = cleanString(row[mapping.income]);
+        if (income && isValidIncome(income)) {
+          customer.demographics.income = income;
+        }
+      }
+
+      // Map interests (comma-separated)
+      if (
+        mapping.interests &&
+        mapping.interests !== "none" &&
+        row[mapping.interests]
+      ) {
+        customer.interests = parseListField(row[mapping.interests]);
+      }
+
+      // Map behaviors (comma-separated)
+      if (
+        mapping.behaviors &&
+        mapping.behaviors !== "none" &&
+        row[mapping.behaviors]
+      ) {
+        customer.behaviors = parseListField(row[mapping.behaviors]);
+      }
+
+      // Map purchase history
+      if (
+        mapping.purchaseHistory &&
+        mapping.purchaseHistory !== "none" &&
+        row[mapping.purchaseHistory]
+      ) {
+        const purchaseHistory = cleanString(row[mapping.purchaseHistory]);
+        if (purchaseHistory) {
+          customer.purchaseHistory = purchaseHistory;
+        }
+      }
+
+      customers.push(customer);
+    } catch (error) {
+      console.warn(`Error processing row ${index + 1}:`, error);
+    }
   });
+
+  return customers;
 };
 
 export const generateAudienceFromCustomers = (
@@ -261,6 +487,48 @@ export const generateAudienceFromCustomers = (
   };
 };
 
+// Helper functions
+const cleanString = (value: string): string => {
+  return value?.trim().replace(/\s+/g, " ") || "";
+};
+
+const isValidEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+const isValidAge = (age: string): boolean => {
+  const ageNum = parseInt(age);
+  return !isNaN(ageNum) && ageNum > 0 && ageNum < 150;
+};
+
+const isValidIncome = (income: string): boolean => {
+  // Remove currency symbols and commas
+  const cleaned = income.replace(/[$,€£¥]/g, "");
+  const incomeNum = parseFloat(cleaned);
+  return !isNaN(incomeNum) && incomeNum >= 0;
+};
+
+const normalizeGender = (gender: string): string => {
+  const normalized = gender.toLowerCase();
+  if (normalized.includes("m") || normalized.includes("male")) return "Male";
+  if (normalized.includes("f") || normalized.includes("female"))
+    return "Female";
+  if (normalized.includes("other") || normalized.includes("non-binary"))
+    return "Other";
+  return gender; // Return original if can't normalize
+};
+
+const parseListField = (value: string): string[] => {
+  if (!value) return [];
+
+  return value
+    .split(/[,;|]/) // Split on comma, semicolon, or pipe
+    .map((item) => cleanString(item))
+    .filter((item) => item.length > 0)
+    .slice(0, 10); // Limit to 10 items per field
+};
+
 const getTopItems = (items: string[], limit: number): string[] => {
   const counts = items.reduce(
     (acc, item) => {
@@ -295,18 +563,4 @@ const calculateDataQuality = (customers: CustomerRecord[]): number => {
   });
 
   return filledFields / totalFields;
-};
-
-export const validateCSVFile = (file: File): string | null => {
-  // Check file type
-  if (!file.name.toLowerCase().endsWith(".csv")) {
-    return "Please upload a CSV file";
-  }
-
-  // Check file size (max 100MB)
-  if (file.size > 100 * 1024 * 1024) {
-    return "File size must be less than 100MB";
-  }
-
-  return null;
 };
