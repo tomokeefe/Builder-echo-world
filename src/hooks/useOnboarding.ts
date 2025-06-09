@@ -162,7 +162,7 @@ export const useOnboarding = () => {
     );
   }, [state.completedTours, state.skippedTours]);
 
-  const startTour = useCallback(
+  const startTour = React.useCallback(
     (tourId: string) => {
       const tour = tours[tourId];
       if (!tour) {
