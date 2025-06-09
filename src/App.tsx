@@ -139,59 +139,60 @@ const App: React.FC = () => {
       <QueryClientProvider client={queryClient}>
         <UserProvider>
           <Router>
-          <div className="flex bg-gray-100 min-h-screen">
-            <Sidebar />
-            <main className="flex-1 overflow-hidden">
-              <Suspense
-                fallback={<LoadingFallback message="Loading page..." />}
-              >
-                <Routes>
-                  <Route path="/" element={<IndexPage />} />
-                  <Route path="/clients" element={<ClientsPage />} />
-                  <Route path="/analytics" element={<AnalyticsPage />} />
-                  <Route path="/campaigns" element={<CampaignsPage />} />
-                  <Route
-                    path="/realtime-analytics"
-                    element={<RealTimeAnalyticsPage />}
-                  />
-                  <Route
-                    path="/ai-recommendations"
-                    element={<AIRecommendationsPage />}
-                  />
-                  <Route
-                    path="/integrations"
-                    element={<EnhancedIntegrationsPage />}
-                  />
-                  <Route path="/team" element={<TeamManagementPage />} />
-                  <Route path="/api-docs" element={<ApiDocsPage />} />
+            <div className="flex bg-gray-100 min-h-screen">
+              <Sidebar />
+              <main className="flex-1 overflow-hidden">
+                <Suspense
+                  fallback={<LoadingFallback message="Loading page..." />}
+                >
+                  <Routes>
+                    <Route path="/" element={<IndexPage />} />
+                    <Route path="/clients" element={<ClientsPage />} />
+                    <Route path="/analytics" element={<AnalyticsPage />} />
+                    <Route path="/campaigns" element={<CampaignsPage />} />
+                    <Route
+                      path="/realtime-analytics"
+                      element={<RealTimeAnalyticsPage />}
+                    />
+                    <Route
+                      path="/ai-recommendations"
+                      element={<AIRecommendationsPage />}
+                    />
+                    <Route
+                      path="/integrations"
+                      element={<EnhancedIntegrationsPage />}
+                    />
+                    <Route path="/team" element={<TeamManagementPage />} />
+                    <Route path="/api-docs" element={<ApiDocsPage />} />
 
-                  {/* New enhanced features */}
-                  <Route
-                    path="/performance"
-                    element={<PerformanceDashboardPage />}
-                  />
-                  <Route path="/automation" element={<AutomationPage />} />
-                  <Route path="/testing" element={<TestingDashboardPage />} />
-                  <Route
-                    path="/api-integration"
-                    element={<ApiIntegrationPage />}
-                  />
-                  <Route
-                    path="/custom-dashboard"
-                    element={<CustomDashboardPage />}
-                  />
-                  <Route
-                    path="/collaboration"
-                    element={<CollaborationPage />}
-                  />
-                  <Route path="/orders" element={<OrdersPage />} />
-                  <Route path="/profile" element={<ProfilePage />} />
-                </Routes>
-              </Suspense>
-            </main>
-          </div>
-          <Toaster />
-        </Router>
+                    {/* New enhanced features */}
+                    <Route
+                      path="/performance"
+                      element={<PerformanceDashboardPage />}
+                    />
+                    <Route path="/automation" element={<AutomationPage />} />
+                    <Route path="/testing" element={<TestingDashboardPage />} />
+                    <Route
+                      path="/api-integration"
+                      element={<ApiIntegrationPage />}
+                    />
+                    <Route
+                      path="/custom-dashboard"
+                      element={<CustomDashboardPage />}
+                    />
+                    <Route
+                      path="/collaboration"
+                      element={<CollaborationPage />}
+                    />
+                    <Route path="/orders" element={<OrdersPage />} />
+                    <Route path="/profile" element={<ProfilePage />} />
+                  </Routes>
+                </Suspense>
+              </main>
+            </div>
+            <Toaster />
+          </Router>
+        </UserProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   );
