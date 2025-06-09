@@ -288,17 +288,33 @@ const Sidebar = () => {
       data-tour="sidebar"
     >
       {/* Header */}
-      <div className="p-6 border-b border-gray-200">
+      <div className={`${isCollapsed ? "p-3" : "p-6"} border-b border-gray-200 transition-all duration-300`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <Circle className="w-4 h-4 text-white" />
             </div>
-            <h1 className="text-xl font-semibold text-gray-900">Skydeo</h1>
+            {!isCollapsed && (
+              <h1 className="text-xl font-semibold text-gray-900">Skydeo</h1>
+            )}
           </div>
 
-          {/* Notification Bell */}
-          <div className="relative" ref={notificationRef}>
+          {/* Toggle Button */}
+          <button
+            onClick={toggleSidebar}
+            className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+            title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {isCollapsed ? (
+              <PanelLeftOpen className="w-5 h-5" />
+            ) : (
+              <PanelLeftClose className="w-5 h-5" />
+            )}
+          </button>
+
+          {/* Notification Bell - Only show when expanded */}
+          {!isCollapsed && (
+            <div className="relative" ref={notificationRef}>
             <button
               onClick={() => setIsNotificationOpen(!isNotificationOpen)}
               className="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200"
