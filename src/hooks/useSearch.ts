@@ -128,9 +128,9 @@ export const useSearch = (options?: {
     });
   }, [audienceStableKey]); // Use stable key to track changes
 
-  // Perform search
-  const performSearch = useCallback(
-    async (query: string) => {
+  // Effect to trigger search when debounced query changes
+  useEffect(() => {
+    const performSearch = async (query: string) => {
       if (!query.trim()) {
         setState((prev) => ({
           ...prev,
@@ -184,14 +184,10 @@ export const useSearch = (options?: {
           results: [],
         }));
       }
-    },
-    [maxResults, enableAI, context],
-  );
+    };
 
-  // Effect to trigger search when debounced query changes
-  useEffect(() => {
     performSearch(debouncedQuery);
-  }, [debouncedQuery]); // Remove performSearch from dependencies to prevent infinite loop
+  }, [debouncedQuery, maxResults, enableAI, context]); // Include all necessary dependencies
 
   // Set search query
   const setQuery = useCallback((query: string) => {
