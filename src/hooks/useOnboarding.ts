@@ -254,7 +254,7 @@ export const useOnboarding = () => {
   }, []);
 
   // Auto-start tours
-  useEffect(() => {
+  React.useEffect(() => {
     const autoStartTours = Object.values(tours).filter(
       (tour) =>
         tour.autoStart &&
