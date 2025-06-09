@@ -219,28 +219,29 @@ export const EnhancedChart: React.FC<EnhancedChartProps> = ({
       case "line":
         return (
           <LineChart {...commonProps}>
-            {config.showGrid && (
-              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-            )}
+            {chartConfig.showGrid && <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />}
             <XAxis
-              dataKey={config.xKey}
+              dataKey={chartConfig.xKey}
               stroke="#6b7280"
               tick={{ fontSize: 12 }}
             />
-            <YAxis stroke="#6b7280" tick={{ fontSize: 12 }} />
-            {config.showTooltip && (
+            <YAxis
+              stroke="#6b7280"
+              tick={{ fontSize: 12 }}
+            />
+            {chartConfig.showTooltip && (
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "white",
-                  border: "1px solid #e5e7eb",
-                  borderRadius: "8px",
-                  boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                  backgroundColor: 'white',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
                 }}
               />
             )}
-            {config.showLegend && <Legend />}
+            {chartConfig.showLegend && <Legend />}
 
-            {config.referenceLines?.map((refLine, index) => (
+            {chartConfig.referenceLines?.map((refLine, index) => (
               <ReferenceLine
                 key={index}
                 y={refLine.value}
@@ -257,19 +258,21 @@ export const EnhancedChart: React.FC<EnhancedChartProps> = ({
                 dataKey={key}
                 stroke={colors[index % colors.length]}
                 strokeWidth={2}
-                dot={{
-                  fill: colors[index % colors.length],
-                  strokeWidth: 0,
-                  r: 4,
-                }}
-                activeDot={{
-                  r: 6,
-                  stroke: colors[index % colors.length],
-                  strokeWidth: 2,
-                }}
-                animationDuration={config.animate ? 750 : 0}
+                dot={{ fill: colors[index % colors.length], strokeWidth: 0, r: 4 }}
+                activeDot={{ r: 6, stroke: colors[index % colors.length], strokeWidth: 2 }}
+                animationDuration={chartConfig.animate ? 750 : 0}
               />
             ))}
+
+            {chartConfig.showBrush && (
+              <Brush
+                dataKey={chartConfig.xKey}
+                height={30}
+                stroke={colors[0]}
+              />
+            )}
+          </LineChart>
+        );
 
             {config.showBrush && (
               <Brush dataKey={config.xKey} height={30} stroke={colors[0]} />
