@@ -344,20 +344,28 @@ class SearchService {
       return this.getDefaultSuggestions();
     }
 
-    const results = this.fuse.search(query).slice(0, 8);
-
-    return results.map((result) => ({
+    const results = this.fuse.search(query, { limit: 20 });
+    const suggestions = results.map((result) => ({
       id: result.item.id,
-      type: "ai",
       text: result.item.title,
       description: result.item.description,
+      type: result.item.type,
       category: result.item.category,
       metadata: {
+        ...result.item.metadata,
         score: result.score,
         url: result.item.url,
-        type: result.item.type,
       },
     }));
+
+    // Remove duplicates based on id
+    const uniqueSuggestions = suggestions.filter(
+      (suggestion, index, array) =>
+        array.findIndex(item => item.id === suggestion.id) === index
+    );
+
+    return uniqueSuggestions;
+  }
   }
 
   // Get AI-powered suggestions based on context
