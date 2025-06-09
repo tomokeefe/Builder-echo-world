@@ -39,6 +39,8 @@ import {
   CheckCircle,
   Info,
   Trash2,
+  ShoppingCart,
+  Package,
 } from "lucide-react";
 
 // Notification types and interfaces
