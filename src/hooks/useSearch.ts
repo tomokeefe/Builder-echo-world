@@ -51,6 +51,8 @@ const initialState: SearchState = {
   sortOrder: "desc",
 };
 
+const DEFAULT_CONTEXT = {};
+
 export const useSearch = (options?: {
   debounceMs?: number;
   maxResults?: number;
@@ -61,7 +63,7 @@ export const useSearch = (options?: {
     debounceMs = 300,
     maxResults = 10,
     enableAI = true,
-    context = {},
+    context = DEFAULT_CONTEXT,
   } = options || {};
 
   const [state, setState] = useState<SearchState>(initialState);
