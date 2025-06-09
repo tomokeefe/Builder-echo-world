@@ -160,10 +160,16 @@ export function SearchResults() {
     }
   };
 
-  const filteredResults = results.filter((result) => {
-    if (filterType === "all") return true;
-    return result.metadata?.type === filterType;
-  });
+  const filteredResults = results
+    .filter((result) => {
+      if (filterType === "all") return true;
+      return result.metadata?.type === filterType;
+    })
+    // Remove duplicates based on id
+    .filter(
+      (result, index, array) =>
+        array.findIndex((item) => item.id === result.id) === index,
+    );
 
   const handleResultClick = (result: any) => {
     if (result.metadata?.url) {
