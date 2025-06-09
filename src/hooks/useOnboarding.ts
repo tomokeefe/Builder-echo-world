@@ -138,7 +138,7 @@ const tours: Record<string, OnboardingTour> = {
 };
 
 export const useOnboarding = () => {
-  const [state, setState] = useState<OnboardingState>({
+  const [state, setState] = React.useState<OnboardingState>({
     isActive: false,
     activeTour: null,
     currentStepIndex: 0,
