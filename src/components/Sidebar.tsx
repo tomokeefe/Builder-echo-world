@@ -47,6 +47,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
+import { SearchDropdown } from "@/components/SearchDropdown";
 
 // Notification types and interfaces
 interface Notification {
