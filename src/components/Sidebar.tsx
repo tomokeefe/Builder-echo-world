@@ -518,8 +518,9 @@ const Sidebar = () => {
               </Link>
             ))}
 
-            {/* Collapsible Sections */}
-            <div className="space-y-1">
+            {/* Collapsible Sections - Only show when expanded */}
+            {!isCollapsed && (
+              <div className="space-y-1">
               {/* Lookalike Audiences */}
               <Collapsible
                 open={isAudiencesOpen}
