@@ -79,18 +79,20 @@ export function CSVUploadModal({
   onOpenChange,
   onCreateAudience,
 }: CSVUploadModalProps) {
-  const [currentStep, setCurrentStep] = useState<
+  const [currentStep, setCurrentStep] = React.useState<
     "upload" | "mapping" | "preview" | "confirm"
   >("upload");
-  const [file, setFile] = useState<File | null>(null);
-  const [csvData, setCsvData] = useState<ParsedCSVData | null>(null);
-  const [columnMapping, setColumnMapping] = useState<ColumnMapping>({});
-  const [customers, setCustomers] = useState<CustomerRecord[]>([]);
-  const [audienceName, setAudienceName] = useState("");
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [validation, setValidation] = useState<ValidationResult | null>(null);
-  const [processingProgress, setProcessingProgress] = useState(0);
+  const [file, setFile] = React.useState<File | null>(null);
+  const [csvData, setCsvData] = React.useState<ParsedCSVData | null>(null);
+  const [columnMapping, setColumnMapping] = React.useState<ColumnMapping>({});
+  const [customers, setCustomers] = React.useState<CustomerRecord[]>([]);
+  const [audienceName, setAudienceName] = React.useState("");
+  const [isProcessing, setIsProcessing] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+  const [validation, setValidation] = React.useState<ValidationResult | null>(
+    null,
+  );
+  const [processingProgress, setProcessingProgress] = React.useState(0);
 
   const { toast } = useToast();
 
