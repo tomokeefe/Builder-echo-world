@@ -33,6 +33,9 @@ export interface SearchState {
   isLoading: boolean;
   hasSearched: boolean;
   error: string | null;
+  filters: string[];
+  sortBy: "relevance" | "date" | "name" | "type";
+  sortOrder: "asc" | "desc";
 }
 
 const DEFAULT_CONTEXT = {};
