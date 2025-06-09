@@ -266,7 +266,7 @@ const Sidebar = () => {
 
             {/* Notification Dropdown */}
             {isNotificationOpen && (
-              <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-hidden">
+              <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-hidden transform translate-x-0 md:translate-x-4">
                 {/* Header */}
                 <div className="p-4 border-b border-gray-200 bg-gray-50">
                   <div className="flex items-center justify-between">
