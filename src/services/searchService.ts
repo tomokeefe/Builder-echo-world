@@ -361,11 +361,10 @@ class SearchService {
     // Remove duplicates based on id
     const uniqueSuggestions = suggestions.filter(
       (suggestion, index, array) =>
-        array.findIndex(item => item.id === suggestion.id) === index
+        array.findIndex((item) => item.id === suggestion.id) === index,
     );
 
     return uniqueSuggestions;
-  }
   }
 
   // Get AI-powered suggestions based on context
