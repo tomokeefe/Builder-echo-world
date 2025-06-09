@@ -191,7 +191,8 @@ const Analytics = () => {
       {mobile.isMobile && <MobileNavigation />}
 
       <motion.div
-    <div className="min-h-screen p-6" style={{ backgroundColor: 'rgba(248, 251, 247, 1)' }}>
+        className="min-h-screen p-6"
+        style={{ backgroundColor: "rgba(248, 251, 247, 1)" }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       >
