@@ -41,10 +41,7 @@ import {
   AudienceOverlap,
 } from "@/types/analytics";
 import EnhancedChart from "@/components/ui/enhanced-chart";
-import {
-  SmartSkeleton,
-  ProgressiveSkeleton,
-} from "@/components/ui/skeleton-loader";
+import { Skeleton } from "@/components/ui/skeleton";
 import MobileNavigation from "@/components/ui/mobile-navigation";
 import { useMobile } from "@/hooks/useMobile";
 import {
