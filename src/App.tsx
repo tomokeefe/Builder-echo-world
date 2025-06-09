@@ -139,7 +139,10 @@ const App: React.FC = () => {
       <QueryClientProvider client={queryClient}>
         <UserProvider>
           <Router>
-            <div className="flex bg-gray-100 min-h-screen">
+            <div
+              className="flex min-h-screen"
+              style={{ backgroundColor: "rgba(248, 251, 247, 1)" }}
+            >
               <Sidebar />
               <main className="flex-1 overflow-hidden">
                 <Suspense
