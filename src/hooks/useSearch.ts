@@ -191,7 +191,7 @@ export const useSearch = (options?: {
   // Effect to trigger search when debounced query changes
   useEffect(() => {
     performSearch(debouncedQuery);
-  }, [debouncedQuery, performSearch]);
+  }, [debouncedQuery]); // Remove performSearch from dependencies to prevent infinite loop
 
   // Set search query
   const setQuery = useCallback((query: string) => {
