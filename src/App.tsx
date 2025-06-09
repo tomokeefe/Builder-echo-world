@@ -183,6 +183,7 @@ const App: React.FC = () => {
                     element={<CollaborationPage />}
                   />
                   <Route path="/orders" element={<OrdersPage />} />
+                  <Route path="/profile" element={<ProfilePage />} />
                 </Routes>
               </Suspense>
             </main>
