@@ -282,7 +282,9 @@ const Sidebar = () => {
 
   return (
     <div
-      className="w-64 bg-white border-r border-gray-200 flex flex-col h-screen hidden md:flex relative"
+      className={`${
+        isCollapsed ? "w-16" : "w-64"
+      } bg-white border-r border-gray-200 flex flex-col h-screen hidden md:flex relative transition-all duration-300 ease-in-out`}
       data-tour="sidebar"
     >
       {/* Header */}
