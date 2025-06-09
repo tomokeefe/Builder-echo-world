@@ -67,38 +67,55 @@ export const useSearch = (options?: {
   const [state, setState] = useState<SearchState>(initialState);
   const [debouncedQuery] = useDebounce(state.query, debounceMs);
   const { audiences } = useAudienceStore();
+  const syncedAudienceIdsRef = useRef<Set<string>>(new Set());
 
-  // Sync audiences with search service
+  // Sync audiences with search service (stable implementation)
   useEffect(() => {
-    const audienceItems: SearchableItem[] = audiences.map((audience) => ({
-      id: `audience-${audience.id}`,
-      title: audience.name,
-      type: "audience",
-      category: "Lookalike Audience",
-      description: audience.description,
-      tags: [
-        "audience",
-        "segment",
-        audience.performance.toLowerCase(),
-        audience.status.toLowerCase(),
-        ...audience.targetingCriteria.demographics.map((d) => d.toLowerCase()),
-        ...audience.targetingCriteria.interests.map((i) => i.toLowerCase()),
-      ],
-      metadata: {
-        size: audience.size,
-        similarity: audience.similarity,
-        performance: audience.performance,
-        status: audience.status,
-        url: "/",
-        type: "audience",
-      },
-    }));
+    // Create a map of current audience IDs
+    const currentAudienceIds = new Set(audiences.map((a) => a.id));
 
-    // Update search service with current audiences
-    audienceItems.forEach((item) => {
-      searchService.addSearchableItem(item);
+    // Remove audiences that no longer exist
+    for (const syncedId of syncedAudienceIdsRef.current) {
+      if (!currentAudienceIds.has(syncedId)) {
+        searchService.removeSearchableItem(`audience-${syncedId}`);
+        syncedAudienceIdsRef.current.delete(syncedId);
+      }
+    }
+
+    // Add new audiences that haven't been synced yet
+    audiences.forEach((audience) => {
+      if (!syncedAudienceIdsRef.current.has(audience.id)) {
+        const audienceItem: SearchableItem = {
+          id: `audience-${audience.id}`,
+          title: audience.name,
+          type: "audience",
+          category: "Lookalike Audience",
+          description: audience.description,
+          tags: [
+            "audience",
+            "segment",
+            audience.performance.toLowerCase(),
+            audience.status.toLowerCase(),
+            ...audience.targetingCriteria.demographics.map((d) =>
+              d.toLowerCase(),
+            ),
+            ...audience.targetingCriteria.interests.map((i) => i.toLowerCase()),
+          ],
+          metadata: {
+            size: audience.size,
+            similarity: audience.similarity,
+            performance: audience.performance,
+            status: audience.status,
+            url: "/",
+            type: "audience",
+          },
+        };
+
+        searchService.addSearchableItem(audienceItem);
+        syncedAudienceIdsRef.current.add(audience.id);
+      }
     });
-  }, [audiences]);
+  }, [audiences.length]); // Only depend on length to avoid infinite loops
 
   // Perform search
   const performSearch = useCallback(
