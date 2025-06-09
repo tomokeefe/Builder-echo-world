@@ -111,6 +111,8 @@ const initialNotifications: Notification[] = [
 
 const Sidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, signOut } = useUser();
   const [isAudiencesOpen, setIsAudiencesOpen] = useState(true);
   const [isCampaignsOpen, setIsCampaignsOpen] = useState(false);
   const [isClientsOpen, setIsClientsOpen] = useState(false);
