@@ -493,19 +493,27 @@ const Sidebar = () => {
               <Link
                 key={item.title}
                 to={item.href}
-                className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`flex items-center ${isCollapsed ? "justify-center px-2 py-3" : "gap-3 px-3 py-2"} rounded-md text-sm font-medium transition-colors ${
                   isActive(item.href)
                     ? "bg-primary text-white"
                     : "text-gray-700 hover:bg-gray-100"
                 }`}
                 data-tour={`nav-${item.title.toLowerCase()}`}
+                title={isCollapsed ? item.title : undefined}
               >
                 <item.icon className="w-4 h-4" />
-                {item.title}
-                {item.badge && (
-                  <Badge variant="secondary" className="ml-auto">
-                    {item.badge}
-                  </Badge>
+                {!isCollapsed && (
+                  <>
+                    {item.title}
+                    {item.badge && (
+                      <Badge variant="secondary" className="ml-auto">
+                        {item.badge}
+                      </Badge>
+                    )}
+                  </>
+                )}
+                {isCollapsed && item.badge && (
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                 )}
               </Link>
             ))}
