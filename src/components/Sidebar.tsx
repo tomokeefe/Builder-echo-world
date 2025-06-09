@@ -43,6 +43,9 @@ import {
   Trash2,
   ShoppingCart,
   Package,
+  Menu,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 
 // Notification types and interfaces
