@@ -17,6 +17,7 @@ const useDebounce = (value: string, delay: number) => {
 };
 import searchService, { SearchableItem } from "@/services/searchService";
 import { SearchSuggestion } from "@/components/ui/search-autocomplete";
+import { useAudienceStore } from "@/hooks/useAudienceStore";
 
 export interface SearchState {
   query: string;
