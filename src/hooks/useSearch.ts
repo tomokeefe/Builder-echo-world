@@ -232,6 +232,74 @@ export const useSearch = (options?: {
     }
   }, []);
 
+  // Filter management functions
+  const addFilter = useCallback((filterId: string) => {
+    setState((prev) => ({
+      ...prev,
+      filters: [...prev.filters, filterId],
+    }));
+  }, []);
+
+  const removeFilter = useCallback((filterId: string) => {
+    setState((prev) => ({
+      ...prev,
+      filters: prev.filters.filter((id) => id !== filterId),
+    }));
+  }, []);
+
+  const clearFilters = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      filters: [],
+    }));
+  }, []);
+
+  // Sorting functions
+  const setSorting = useCallback(
+    (sortBy: SearchState["sortBy"], sortOrder: SearchState["sortOrder"]) => {
+      setState((prev) => ({ ...prev, sortBy, sortOrder }));
+    },
+    [],
+  );
+
+  // Export search results
+  const exportResults = useCallback(() => {
+    const data = {
+      query: state.query,
+      results: state.results,
+      timestamp: new Date().toISOString(),
+      filters: state.filters,
+      sortBy: state.sortBy,
+      sortOrder: state.sortOrder,
+    };
+
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `search-results-${Date.now()}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }, [state]);
+
+  // Get search analytics
+  const getAnalytics = useCallback(() => {
+    return {
+      totalSearches: recentSearches.length,
+      topQueries: popularSearches.slice(0, 5),
+      averageResultsPerSearch: state.results.length,
+      successRate: state.hasSearched && state.results.length > 0 ? 100 : 0,
+      currentQuery: state.query,
+      totalResults: state.results.length,
+      hasActiveFilters: state.filters.length > 0,
+      activeFilters: state.filters,
+    };
+  }, [recentSearches, popularSearches, state]);
+
   return {
     // Current state
     query: state.query,
