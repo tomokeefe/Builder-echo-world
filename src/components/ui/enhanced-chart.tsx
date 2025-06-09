@@ -121,14 +121,41 @@ export const EnhancedChart: React.FC<EnhancedChartProps> = ({
   showControls = true,
   onExport,
   onRefresh,
+  // Individual props
+  data,
+  type,
+  xKey,
+  yKey,
+  colors: propColors,
+  showGrid = true,
+  showLegend = true,
+  showBrush = false,
+  showTooltip = true,
+  height: propHeight,
+  animate = true,
 }) => {
+  // Create config from individual props if config is not provided
+  const chartConfig: ChartConfig = config || {
+    type: type || "line",
+    data: data || [],
+    xKey: xKey || "",
+    yKey: yKey || "",
+    colors: propColors,
+    showGrid,
+    showLegend,
+    showBrush,
+    showTooltip,
+    height: propHeight,
+    animate,
+  };
+
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [selectedDataKeys, setSelectedDataKeys] = useState<string[]>(
-    Array.isArray(config.yKey) ? config.yKey : [config.yKey],
+    Array.isArray(chartConfig.yKey) ? chartConfig.yKey : [chartConfig.yKey],
   );
 
-  const colors = config.colors || defaultColors;
-  const height = config.height || 300;
+  const colors = chartConfig.colors || defaultColors;
+  const height = chartConfig.height || 300;
 
   // Calculate trend for display
   const trend = useMemo(() => {
