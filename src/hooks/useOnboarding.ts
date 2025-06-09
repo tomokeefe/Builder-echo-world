@@ -245,7 +245,7 @@ export const useOnboarding = () => {
     }));
   }, []);
 
-  const resetAllTours = useCallback(() => {
+  const resetAllTours = React.useCallback(() => {
     setState((prev) => ({
       ...prev,
       completedTours: [],
