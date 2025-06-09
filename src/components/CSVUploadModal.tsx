@@ -96,7 +96,7 @@ export function CSVUploadModal({
 
   const { toast } = useToast();
 
-  const onDrop = useCallback(
+  const onDrop = React.useCallback(
     async (acceptedFiles: File[]) => {
       const uploadedFile = acceptedFiles[0];
       if (!uploadedFile) return;
