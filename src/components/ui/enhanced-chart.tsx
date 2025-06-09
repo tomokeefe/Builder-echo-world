@@ -274,8 +274,8 @@ export const EnhancedChart: React.FC<EnhancedChartProps> = ({
           </LineChart>
         );
 
-            {config.showBrush && (
-              <Brush dataKey={config.xKey} height={30} stroke={colors[0]} />
+            {chartConfig.showBrush && (
+              <Brush dataKey={chartConfig.xKey} height={30} stroke={colors[0]} />
             )}
           </LineChart>
         );
