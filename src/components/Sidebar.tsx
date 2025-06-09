@@ -23,6 +23,7 @@ import {
   Megaphone,
   Settings,
   Users,
+  User,
   Zap,
   ChevronDown,
   ChevronRight,
