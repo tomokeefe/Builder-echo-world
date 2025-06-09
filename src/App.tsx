@@ -137,7 +137,8 @@ const App: React.FC = () => {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <QueryClientProvider client={queryClient}>
-        <Router>
+        <UserProvider>
+          <Router>
           <div className="flex bg-gray-100 min-h-screen">
             <Sidebar />
             <main className="flex-1 overflow-hidden">
