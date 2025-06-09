@@ -31,6 +31,14 @@ export function SearchDropdown() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Memoize the context to prevent infinite re-renders
+  const searchContext = useMemo(
+    () => ({
+      currentPage: location.pathname,
+    }),
+    [location.pathname],
+  );
+
   const {
     query,
     results,
@@ -42,7 +50,7 @@ export function SearchDropdown() {
     clearSearch,
     handleSuggestionSelect,
   } = useSearch({
-    context: { currentPage: location.pathname },
+    context: searchContext,
     maxResults: 8,
   });
 
