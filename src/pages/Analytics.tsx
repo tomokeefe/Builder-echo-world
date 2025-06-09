@@ -253,15 +253,10 @@ const Analytics = () => {
             data-tour="performance-metrics"
           >
             {performanceMetrics.map((metric, index) => (
-              <ProgressiveSkeleton
+              <motion.div
                 key={metric.id}
-                isLoading={isLoading}
-                skeleton={<SmartSkeleton type="card" />}
-                staggerDelay={index * 0.1}
-              >
-                <motion.div
-                  variants={staggerItem}
-                  whileHover={elevateHover.hover}
+                variants={staggerItem}
+                whileHover={elevateHover.hover}
                 >
                   <Card className="transition-all duration-200">
                     <CardContent className="p-4 md:p-6">
