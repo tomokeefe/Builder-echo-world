@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import React from "react";
 
 export interface OnboardingStep {
   id: string;
