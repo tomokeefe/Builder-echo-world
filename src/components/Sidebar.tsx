@@ -242,7 +242,7 @@ const Sidebar = () => {
 
   return (
     <div
-      className="w-64 bg-white border-r border-gray-200 flex flex-col h-full hidden md:flex relative"
+      className="w-64 bg-white border-r border-gray-200 flex flex-col h-screen hidden md:flex relative"
       data-tour="sidebar"
     >
       {/* Header */}
