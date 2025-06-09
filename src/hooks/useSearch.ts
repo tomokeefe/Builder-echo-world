@@ -153,24 +153,26 @@ export const useSearch = (options?: {
           ? searchService.getAISuggestions(query, context)
           : [];
 
-        // Get filter suggestions
-        const filterSuggestions = searchService.getFilterSuggestions(
-          state.filters,
-        );
+        // Get filter suggestions - use current state value directly
+        setState((prev) => {
+          const filterSuggestions = searchService.getFilterSuggestions(
+            prev.filters,
+          );
 
-        // Combine and limit results
-        const allResults = [
-          ...aiSuggestions,
-          ...searchResults,
-          ...filterSuggestions.slice(0, 2),
-        ].slice(0, maxResults);
+          // Combine and limit results
+          const allResults = [
+            ...aiSuggestions,
+            ...searchResults,
+            ...filterSuggestions.slice(0, 2),
+          ].slice(0, maxResults);
 
-        setState((prev) => ({
-          ...prev,
-          results: allResults,
-          isLoading: false,
-          hasSearched: true,
-        }));
+          return {
+            ...prev,
+            results: allResults,
+            isLoading: false,
+            hasSearched: true,
+          };
+        });
 
         // Add to recent searches
         searchService.addToRecentSearches(query);
@@ -183,7 +185,7 @@ export const useSearch = (options?: {
         }));
       }
     },
-    [maxResults, enableAI, context, state.filters],
+    [maxResults, enableAI, context],
   );
 
   // Effect to trigger search when debounced query changes
