@@ -419,8 +419,8 @@ const Sidebar = () => {
       </div>
 
       {/* Navigation - Scrollable content */}
-      <div className="flex-1 flex flex-col min-h-0">
-        <nav className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto">
+        <nav>
           <div className="p-4 space-y-2">
             {/* Main Navigation */}
             {navigationItems.map((item) => (
