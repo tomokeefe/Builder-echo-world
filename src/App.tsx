@@ -155,6 +155,7 @@ const App: React.FC = () => {
                 >
                   <Routes>
                     <Route path="/" element={<IndexPage />} />
+                    <Route path="/search" element={<SearchResultsPage />} />
                     <Route path="/clients" element={<ClientsPage />} />
                     <Route path="/analytics" element={<AnalyticsPage />} />
                     <Route path="/campaigns" element={<CampaignsPage />} />
