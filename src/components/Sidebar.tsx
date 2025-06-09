@@ -521,120 +521,125 @@ const Sidebar = () => {
             {/* Collapsible Sections - Only show when expanded */}
             {!isCollapsed && (
               <div className="space-y-1">
-              {/* Lookalike Audiences */}
-              <Collapsible
-                open={isAudiencesOpen}
-                onOpenChange={setIsAudiencesOpen}
-              >
-                <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">
-                  <div className="flex items-center gap-3">
-                    <Target className="w-4 h-4" />
-                    My Audiences
-                  </div>
-                  {isAudiencesOpen ? (
-                    <ChevronDown className="w-4 h-4" />
-                  ) : (
-                    <ChevronRight className="w-4 h-4" />
-                  )}
-                </CollapsibleTrigger>
-                <CollapsibleContent className="pl-7 space-y-1">
-                  {audienceItems.map((item) => (
-                    <Link
-                      key={item.title}
-                      to={item.href}
-                      className={`flex items-center justify-between px-3 py-1.5 text-sm rounded-md transition-colors ${
-                        isActive(item.href)
-                          ? "bg-primary/10 text-primary"
-                          : "text-gray-600 hover:bg-gray-100"
-                      }`}
-                    >
-                      {item.title}
-                      <span className="text-xs text-gray-400">
-                        {item.count}
-                      </span>
-                    </Link>
-                  ))}
-                </CollapsibleContent>
-              </Collapsible>
+                {/* Lookalike Audiences */}
+                <Collapsible
+                  open={isAudiencesOpen}
+                  onOpenChange={setIsAudiencesOpen}
+                >
+                  <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">
+                    <div className="flex items-center gap-3">
+                      <Target className="w-4 h-4" />
+                      My Audiences
+                    </div>
+                    {isAudiencesOpen ? (
+                      <ChevronDown className="w-4 h-4" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4" />
+                    )}
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="pl-7 space-y-1">
+                    {audienceItems.map((item) => (
+                      <Link
+                        key={item.title}
+                        to={item.href}
+                        className={`flex items-center justify-between px-3 py-1.5 text-sm rounded-md transition-colors ${
+                          isActive(item.href)
+                            ? "bg-primary/10 text-primary"
+                            : "text-gray-600 hover:bg-gray-100"
+                        }`}
+                      >
+                        {item.title}
+                        <span className="text-xs text-gray-400">
+                          {item.count}
+                        </span>
+                      </Link>
+                    ))}
+                  </CollapsibleContent>
+                </Collapsible>
 
-              {/* Campaigns */}
-              <Collapsible
-                open={isCampaignsOpen}
-                onOpenChange={setIsCampaignsOpen}
-              >
-                <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">
-                  <div className="flex items-center gap-3">
-                    <Megaphone className="w-4 h-4" />
-                    Campaigns
-                  </div>
-                  {isCampaignsOpen ? (
-                    <ChevronDown className="w-4 h-4" />
-                  ) : (
-                    <ChevronRight className="w-4 h-4" />
-                  )}
-                </CollapsibleTrigger>
-                <CollapsibleContent className="pl-7 space-y-1">
-                  {campaignItems.map((item) => (
-                    <Link
-                      key={item.title}
-                      to={item.href}
-                      className={`flex items-center justify-between px-3 py-1.5 text-sm rounded-md transition-colors ${
-                        isActive(item.href)
-                          ? "bg-primary/10 text-primary"
-                          : "text-gray-600 hover:bg-gray-100"
-                      }`}
-                    >
-                      {item.title}
-                      <span className="text-xs text-gray-400">
-                        {item.count}
-                      </span>
-                    </Link>
-                  ))}
-                </CollapsibleContent>
-              </Collapsible>
+                {/* Campaigns */}
+                <Collapsible
+                  open={isCampaignsOpen}
+                  onOpenChange={setIsCampaignsOpen}
+                >
+                  <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">
+                    <div className="flex items-center gap-3">
+                      <Megaphone className="w-4 h-4" />
+                      Campaigns
+                    </div>
+                    {isCampaignsOpen ? (
+                      <ChevronDown className="w-4 h-4" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4" />
+                    )}
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="pl-7 space-y-1">
+                    {campaignItems.map((item) => (
+                      <Link
+                        key={item.title}
+                        to={item.href}
+                        className={`flex items-center justify-between px-3 py-1.5 text-sm rounded-md transition-colors ${
+                          isActive(item.href)
+                            ? "bg-primary/10 text-primary"
+                            : "text-gray-600 hover:bg-gray-100"
+                        }`}
+                      >
+                        {item.title}
+                        <span className="text-xs text-gray-400">
+                          {item.count}
+                        </span>
+                      </Link>
+                    ))}
+                  </CollapsibleContent>
+                </Collapsible>
 
-              {/* Clients */}
-              <Collapsible open={isClientsOpen} onOpenChange={setIsClientsOpen}>
-                <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">
-                  <div className="flex items-center gap-3">
-                    <Users className="w-4 h-4" />
-                    Clients
-                  </div>
-                  {isClientsOpen ? (
-                    <ChevronDown className="w-4 h-4" />
-                  ) : (
-                    <ChevronRight className="w-4 h-4" />
-                  )}
-                </CollapsibleTrigger>
-                <CollapsibleContent className="pl-7 space-y-1">
-                  {clientItems.map((item) => (
-                    <Link
-                      key={item.title}
-                      to={item.href}
-                      className={`flex items-center justify-between px-3 py-1.5 text-sm rounded-md transition-colors ${
-                        isActive(item.href)
-                          ? "bg-primary/10 text-primary"
-                          : "text-gray-600 hover:bg-gray-100"
-                      }`}
-                    >
-                      {item.title}
-                      <span className="text-xs text-gray-400">
-                        {item.count}
-                      </span>
-                    </Link>
-                  ))}
-                </CollapsibleContent>
-              </Collapsible>
-            </div>
+                {/* Clients */}
+                <Collapsible
+                  open={isClientsOpen}
+                  onOpenChange={setIsClientsOpen}
+                >
+                  <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">
+                    <div className="flex items-center gap-3">
+                      <Users className="w-4 h-4" />
+                      Clients
+                    </div>
+                    {isClientsOpen ? (
+                      <ChevronDown className="w-4 h-4" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4" />
+                    )}
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="pl-7 space-y-1">
+                    {clientItems.map((item) => (
+                      <Link
+                        key={item.title}
+                        to={item.href}
+                        className={`flex items-center justify-between px-3 py-1.5 text-sm rounded-md transition-colors ${
+                          isActive(item.href)
+                            ? "bg-primary/10 text-primary"
+                            : "text-gray-600 hover:bg-gray-100"
+                        }`}
+                      >
+                        {item.title}
+                        <span className="text-xs text-gray-400">
+                          {item.count}
+                        </span>
+                      </Link>
+                    ))}
+                  </CollapsibleContent>
+                </Collapsible>
+              </div>
+            )}
 
             {/* Additional Links */}
             <div className="pt-4 space-y-1">
               <Link
                 to="/settings"
-                className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100"
+                className={`flex items-center ${isCollapsed ? "justify-center px-2 py-3" : "gap-3 px-3 py-2"} text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100`}
+                title={isCollapsed ? "Settings" : undefined}
               >
                 <Settings className="w-4 h-4" />
-                Settings
+                {!isCollapsed && "Settings"}
               </Link>
             </div>
           </div>
