@@ -151,7 +151,7 @@ export const useOnboarding = () => {
   });
 
   // Save state to localStorage
-  useEffect(() => {
+  React.useEffect(() => {
     localStorage.setItem(
       "skydeo-completed-tours",
       JSON.stringify(state.completedTours),
