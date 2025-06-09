@@ -235,7 +235,7 @@ export const useSearch = (options?: {
   // Get recent searches
   const recentSearches = useMemo(() => {
     return searchService.getRecentSearches();
-  }, [state.query]); // Re-compute when query changes
+  }, []); // Only compute once, as recent searches are managed by searchService
 
   // Get popular searches
   const popularSearches = useMemo(() => {
