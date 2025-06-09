@@ -69,6 +69,11 @@ export const useSearch = (options?: {
   const { audiences } = useAudienceStore();
   const syncedAudienceIdsRef = useRef<Set<string>>(new Set());
 
+  // Create a stable representation of audiences for dependency tracking
+  const audienceStableKey = useMemo(() => {
+    return audiences.map((a) => `${a.id}-${a.name}-${a.status}`).join("|");
+  }, [audiences]);
+
   // Sync audiences with search service (stable implementation)
   useEffect(() => {
     // Create a map of current audience IDs
@@ -82,40 +87,46 @@ export const useSearch = (options?: {
       }
     }
 
-    // Add new audiences that haven't been synced yet
+    // Add or update audiences
     audiences.forEach((audience) => {
-      if (!syncedAudienceIdsRef.current.has(audience.id)) {
-        const audienceItem: SearchableItem = {
-          id: `audience-${audience.id}`,
-          title: audience.name,
+      const audienceItem: SearchableItem = {
+        id: `audience-${audience.id}`,
+        title: audience.name,
+        type: "audience",
+        category: "Lookalike Audience",
+        description: audience.description,
+        tags: [
+          "audience",
+          "segment",
+          audience.performance.toLowerCase(),
+          audience.status.toLowerCase(),
+          ...audience.targetingCriteria.demographics.map((d) =>
+            d.toLowerCase(),
+          ),
+          ...audience.targetingCriteria.interests.map((i) => i.toLowerCase()),
+        ],
+        metadata: {
+          size: audience.size,
+          similarity: audience.similarity,
+          performance: audience.performance,
+          status: audience.status,
+          url: "/",
           type: "audience",
-          category: "Lookalike Audience",
-          description: audience.description,
-          tags: [
-            "audience",
-            "segment",
-            audience.performance.toLowerCase(),
-            audience.status.toLowerCase(),
-            ...audience.targetingCriteria.demographics.map((d) =>
-              d.toLowerCase(),
-            ),
-            ...audience.targetingCriteria.interests.map((i) => i.toLowerCase()),
-          ],
-          metadata: {
-            size: audience.size,
-            similarity: audience.similarity,
-            performance: audience.performance,
-            status: audience.status,
-            url: "/",
-            type: "audience",
-          },
-        };
+        },
+      };
 
+      if (!syncedAudienceIdsRef.current.has(audience.id)) {
         searchService.addSearchableItem(audienceItem);
         syncedAudienceIdsRef.current.add(audience.id);
+      } else {
+        // Update existing item
+        searchService.updateSearchableItem(
+          `audience-${audience.id}`,
+          audienceItem,
+        );
       }
     });
-  }, [audiences.length]); // Only depend on length to avoid infinite loops
+  }, [audienceStableKey]); // Use stable key to track changes
 
   // Perform search
   const performSearch = useCallback(
