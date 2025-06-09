@@ -66,6 +66,39 @@ export const useSearch = (options?: {
 
   const [state, setState] = useState<SearchState>(initialState);
   const [debouncedQuery] = useDebounce(state.query, debounceMs);
+  const { audiences } = useAudienceStore();
+
+  // Sync audiences with search service
+  useEffect(() => {
+    const audienceItems: SearchableItem[] = audiences.map((audience) => ({
+      id: `audience-${audience.id}`,
+      title: audience.name,
+      type: "audience",
+      category: "Lookalike Audience",
+      description: audience.description,
+      tags: [
+        "audience",
+        "segment",
+        audience.performance.toLowerCase(),
+        audience.status.toLowerCase(),
+        ...audience.targetingCriteria.demographics.map((d) => d.toLowerCase()),
+        ...audience.targetingCriteria.interests.map((i) => i.toLowerCase()),
+      ],
+      metadata: {
+        size: audience.size,
+        similarity: audience.similarity,
+        performance: audience.performance,
+        status: audience.status,
+        url: "/",
+        type: "audience",
+      },
+    }));
+
+    // Update search service with current audiences
+    audienceItems.forEach((item) => {
+      searchService.addSearchableItem(item);
+    });
+  }, [audiences]);
 
   // Perform search
   const performSearch = useCallback(
