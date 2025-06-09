@@ -138,8 +138,8 @@ export const EnhancedChart: React.FC<EnhancedChartProps> = ({
   const chartConfig: ChartConfig = config || {
     type: type || "line",
     data: data || [],
-    xKey: xKey || "",
-    yKey: yKey || "",
+    xKey: xKey || "date",
+    yKey: yKey || "value",
     colors: propColors,
     showGrid,
     showLegend,
@@ -219,23 +219,22 @@ export const EnhancedChart: React.FC<EnhancedChartProps> = ({
       case "line":
         return (
           <LineChart {...commonProps}>
-            {chartConfig.showGrid && <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />}
+            {chartConfig.showGrid && (
+              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+            )}
             <XAxis
               dataKey={chartConfig.xKey}
               stroke="#6b7280"
               tick={{ fontSize: 12 }}
             />
-            <YAxis
-              stroke="#6b7280"
-              tick={{ fontSize: 12 }}
-            />
+            <YAxis stroke="#6b7280" tick={{ fontSize: 12 }} />
             {chartConfig.showTooltip && (
               <Tooltip
                 contentStyle={{
-                  backgroundColor: 'white',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                  backgroundColor: "white",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "8px",
+                  boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
                 }}
               />
             )}
@@ -258,8 +257,16 @@ export const EnhancedChart: React.FC<EnhancedChartProps> = ({
                 dataKey={key}
                 stroke={colors[index % colors.length]}
                 strokeWidth={2}
-                dot={{ fill: colors[index % colors.length], strokeWidth: 0, r: 4 }}
-                activeDot={{ r: 6, stroke: colors[index % colors.length], strokeWidth: 2 }}
+                dot={{
+                  fill: colors[index % colors.length],
+                  strokeWidth: 0,
+                  r: 4,
+                }}
+                activeDot={{
+                  r: 6,
+                  stroke: colors[index % colors.length],
+                  strokeWidth: 2,
+                }}
                 animationDuration={chartConfig.animate ? 750 : 0}
               />
             ))}
@@ -274,25 +281,19 @@ export const EnhancedChart: React.FC<EnhancedChartProps> = ({
           </LineChart>
         );
 
-            {chartConfig.showBrush && (
-              <Brush dataKey={chartConfig.xKey} height={30} stroke={colors[0]} />
-            )}
-          </LineChart>
-        );
-
       case "area":
         return (
           <AreaChart {...commonProps}>
-            {config.showGrid && (
+            {chartConfig.showGrid && (
               <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
             )}
             <XAxis
-              dataKey={config.xKey}
+              dataKey={chartConfig.xKey}
               stroke="#6b7280"
               tick={{ fontSize: 12 }}
             />
             <YAxis stroke="#6b7280" tick={{ fontSize: 12 }} />
-            {config.showTooltip && (
+            {chartConfig.showTooltip && (
               <Tooltip
                 contentStyle={{
                   backgroundColor: "white",
@@ -302,7 +303,7 @@ export const EnhancedChart: React.FC<EnhancedChartProps> = ({
                 }}
               />
             )}
-            {config.showLegend && <Legend />}
+            {chartConfig.showLegend && <Legend />}
 
             {selectedDataKeys.map((key, index) => (
               <Area
@@ -314,7 +315,7 @@ export const EnhancedChart: React.FC<EnhancedChartProps> = ({
                 fill={colors[index % colors.length]}
                 fillOpacity={0.3}
                 strokeWidth={2}
-                animationDuration={config.animate ? 750 : 0}
+                animationDuration={chartConfig.animate ? 750 : 0}
               />
             ))}
           </AreaChart>
@@ -323,16 +324,16 @@ export const EnhancedChart: React.FC<EnhancedChartProps> = ({
       case "bar":
         return (
           <BarChart {...commonProps}>
-            {config.showGrid && (
+            {chartConfig.showGrid && (
               <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
             )}
             <XAxis
-              dataKey={config.xKey}
+              dataKey={chartConfig.xKey}
               stroke="#6b7280"
               tick={{ fontSize: 12 }}
             />
             <YAxis stroke="#6b7280" tick={{ fontSize: 12 }} />
-            {config.showTooltip && (
+            {chartConfig.showTooltip && (
               <Tooltip
                 contentStyle={{
                   backgroundColor: "white",
@@ -342,7 +343,7 @@ export const EnhancedChart: React.FC<EnhancedChartProps> = ({
                 }}
               />
             )}
-            {config.showLegend && <Legend />}
+            {chartConfig.showLegend && <Legend />}
 
             {selectedDataKeys.map((key, index) => (
               <Bar
@@ -350,7 +351,7 @@ export const EnhancedChart: React.FC<EnhancedChartProps> = ({
                 dataKey={key}
                 fill={colors[index % colors.length]}
                 radius={[4, 4, 0, 0]}
-                animationDuration={config.animate ? 750 : 0}
+                animationDuration={chartConfig.animate ? 750 : 0}
               />
             ))}
           </BarChart>
@@ -360,28 +361,30 @@ export const EnhancedChart: React.FC<EnhancedChartProps> = ({
         return (
           <PieChart>
             <Pie
-              data={config.data}
+              data={chartConfig.data}
               cx="50%"
               cy="50%"
               outerRadius={Math.min(height / 3, 100)}
               fill={colors[0]}
               dataKey={
-                Array.isArray(config.yKey) ? config.yKey[0] : config.yKey
+                Array.isArray(chartConfig.yKey)
+                  ? chartConfig.yKey[0]
+                  : chartConfig.yKey
               }
               label={({ name, percent }) =>
                 `${name} ${(percent * 100).toFixed(0)}%`
               }
-              animationDuration={config.animate ? 750 : 0}
+              animationDuration={chartConfig.animate ? 750 : 0}
             >
-              {config.data.map((entry, index) => (
+              {chartConfig.data.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
                   fill={colors[index % colors.length]}
                 />
               ))}
             </Pie>
-            {config.showTooltip && <Tooltip />}
-            {config.showLegend && <Legend />}
+            {chartConfig.showTooltip && <Tooltip />}
+            {chartConfig.showLegend && <Legend />}
           </PieChart>
         );
 
