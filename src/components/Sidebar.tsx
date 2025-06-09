@@ -248,17 +248,152 @@ const Sidebar = () => {
           </div>
 
           {/* Notification Bell */}
-          <button
-            className="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200"
-            aria-label="Notifications"
-            data-tour="notifications"
-          >
-            <Bell className="w-5 h-5" />
-            {/* Notification Badge */}
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full flex items-center justify-center">
-              <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
-            </span>
-          </button>
+          <div className="relative" ref={notificationRef}>
+            <button
+              onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+              className="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+              aria-label="Notifications"
+              data-tour="notifications"
+            >
+              <Bell className="w-5 h-5" />
+              {/* Notification Badge */}
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-xs font-medium text-white">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+            </button>
+
+            {/* Notification Dropdown */}
+            {isNotificationOpen && (
+              <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-hidden">
+                {/* Header */}
+                <div className="p-4 border-b border-gray-200 bg-gray-50">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold text-gray-900">
+                      Notifications
+                    </h3>
+                    <div className="flex items-center gap-2">
+                      {unreadCount > 0 && (
+                        <button
+                          onClick={markAllAsRead}
+                          className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                        >
+                          Mark all read
+                        </button>
+                      )}
+                      {notifications.length > 0 && (
+                        <button
+                          onClick={clearAllNotifications}
+                          className="text-xs text-red-600 hover:text-red-800 font-medium ml-2"
+                        >
+                          Clear all
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Notification List */}
+                <div className="max-h-80 overflow-y-auto">
+                  {notifications.length === 0 ? (
+                    <div className="p-6 text-center text-gray-500">
+                      <Bell className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                      <p className="text-sm">No notifications</p>
+                    </div>
+                  ) : (
+                    notifications.map((notification) => (
+                      <div
+                        key={notification.id}
+                        className={`p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer ${
+                          !notification.read
+                            ? "bg-blue-50 border-l-4 border-l-blue-500"
+                            : ""
+                        }`}
+                        onClick={() => {
+                          if (!notification.read) markAsRead(notification.id);
+                          if (notification.actionUrl) {
+                            // In a real app, this would navigate to the URL
+                            console.log("Navigate to:", notification.actionUrl);
+                          }
+                        }}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="mt-0.5">
+                            {getNotificationIcon(notification.type)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <p
+                                  className={`text-sm font-medium ${
+                                    !notification.read
+                                      ? "text-gray-900"
+                                      : "text-gray-700"
+                                  }`}
+                                >
+                                  {notification.title}
+                                </p>
+                                <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+                                  {notification.message}
+                                </p>
+                                <div className="flex items-center gap-2 mt-2">
+                                  <Clock className="w-3 h-3 text-gray-400" />
+                                  <span className="text-xs text-gray-500">
+                                    {formatTimestamp(notification.timestamp)}
+                                  </span>
+                                  {!notification.read && (
+                                    <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1 ml-2">
+                                {!notification.read && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      markAsRead(notification.id);
+                                    }}
+                                    className="p-1 text-gray-400 hover:text-blue-600 rounded"
+                                    title="Mark as read"
+                                  >
+                                    <Check className="w-3 h-3" />
+                                  </button>
+                                )}
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    removeNotification(notification.id);
+                                  }}
+                                  className="p-1 text-gray-400 hover:text-red-600 rounded"
+                                  title="Remove notification"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Footer */}
+                {notifications.length > 0 && (
+                  <div className="p-3 border-t border-gray-200 bg-gray-50">
+                    <Link
+                      to="/notifications"
+                      className="text-sm text-blue-600 hover:text-blue-800 font-medium block text-center"
+                      onClick={() => setIsNotificationOpen(false)}
+                    >
+                      View all notifications
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
