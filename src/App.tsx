@@ -94,6 +94,11 @@ const OrdersPage = createLazyComponent(
   "Loading orders...",
 );
 
+const ProfilePage = createLazyComponent(
+  () => import("@/pages/Profile"),
+  "Loading profile...",
+);
+
 // Create a React Query client
 const queryClient = new QueryClient({
   defaultOptions: {
