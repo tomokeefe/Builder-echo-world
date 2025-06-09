@@ -587,12 +587,16 @@ const Sidebar = () => {
             >
               <div className="flex items-center gap-3">
                 <Avatar className="w-8 h-8">
-                  <AvatarImage src="/placeholder.svg" />
-                  <AvatarFallback>JD</AvatarFallback>
+                  <AvatarImage src={user?.avatar || "/placeholder.svg"} />
+                  <AvatarFallback>
+                    {user?.name?.charAt(0) || "U"}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="text-left">
-                  <p className="text-sm font-medium">John Doe</p>
-                  <p className="text-xs text-gray-500">john@company.com</p>
+                  <p className="text-sm font-medium">{user?.name || "User"}</p>
+                  <p className="text-xs text-gray-500">
+                    {user?.email || "user@company.com"}
+                  </p>
                 </div>
               </div>
             </Button>
@@ -601,21 +605,29 @@ const Sidebar = () => {
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
+              <Link to="/profile">
+                <User className="w-4 h-4 mr-2" />
+                Profile
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
               <Link to="/settings">
                 <Settings className="w-4 h-4 mr-2" />
                 Settings
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Bell className="w-4 h-4 mr-2" />
-              Notifications
+            <DropdownMenuItem asChild>
+              <Link to="/profile?tab=notifications">
+                <Bell className="w-4 h-4 mr-2" />
+                Notifications
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem>
               <HelpCircle className="w-4 h-4 mr-2" />
               Help & Support
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleSignOut}>
               <LogOut className="w-4 h-4 mr-2" />
               Sign Out
             </DropdownMenuItem>
