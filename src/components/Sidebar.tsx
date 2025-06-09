@@ -194,6 +194,14 @@ const Sidebar = () => {
     return `${days}d ago`;
   };
 
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error("Failed to sign out:", error);
+    }
+  };
+
   const navigationItems = [
     {
       title: "Dashboard",
