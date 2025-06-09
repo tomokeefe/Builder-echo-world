@@ -307,6 +307,9 @@ export const useSearch = (options?: {
     isLoading: state.isLoading,
     hasSearched: state.hasSearched,
     error: state.error,
+    filters: state.filters,
+    sortBy: state.sortBy,
+    sortOrder: state.sortOrder,
 
     // Suggestions and shortcuts
     suggestions,
@@ -317,6 +320,18 @@ export const useSearch = (options?: {
     setQuery,
     clearSearch,
     handleSuggestionSelect,
+
+    // Filter management
+    addFilter,
+    removeFilter,
+    clearFilters,
+
+    // Sorting
+    setSorting,
+
+    // Export and analytics
+    exportResults,
+    getAnalytics,
 
     // Direct access to search service
     searchService,
