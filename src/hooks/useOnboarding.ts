@@ -225,7 +225,7 @@ export const useOnboarding = () => {
     }));
   }, [state.activeTour]);
 
-  const skipTour = useCallback(() => {
+  const skipTour = React.useCallback(() => {
     if (!state.activeTour) return;
 
     setState((prev) => ({
