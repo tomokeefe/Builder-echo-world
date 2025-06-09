@@ -157,20 +157,22 @@ export function SearchDropdown() {
     return result.category || "Result";
   };
 
-  const displayResults = query.trim()
-    ? results
-    : [
-        ...recentSearches.slice(0, 3).map((search) => ({
-          id: `recent-${search}`,
-          type: "recent",
-          text: search,
-        })),
-        ...popularSearches.slice(0, 3).map((search) => ({
-          id: `popular-${search}`,
-          type: "popular",
-          text: search,
-        })),
-      ];
+  const displayResults = useMemo(() => {
+    return query.trim()
+      ? results
+      : [
+          ...recentSearches.slice(0, 3).map((search) => ({
+            id: `recent-${search}`,
+            type: "recent",
+            text: search,
+          })),
+          ...popularSearches.slice(0, 3).map((search) => ({
+            id: `popular-${search}`,
+            type: "popular",
+            text: search,
+          })),
+        ];
+  }, [query, results, recentSearches, popularSearches]);
 
   return (
     <div ref={searchRef} className="relative" data-tour="search">
