@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -32,7 +32,79 @@ import {
   Search,
   Circle,
   Building,
+  Check,
+  X,
+  Clock,
+  AlertTriangle,
+  CheckCircle,
+  Info,
+  Trash2,
 } from "lucide-react";
+
+// Notification types and interfaces
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  type: "info" | "success" | "warning" | "error";
+  timestamp: Date;
+  read: boolean;
+  actionUrl?: string;
+}
+
+// Mock notification data
+const initialNotifications: Notification[] = [
+  {
+    id: "1",
+    title: "Campaign Performance Alert",
+    message:
+      'Your "Summer Sale" campaign CTR dropped below 2%. Consider optimizing your ad creative.',
+    type: "warning",
+    timestamp: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
+    read: false,
+    actionUrl: "/campaigns",
+  },
+  {
+    id: "2",
+    title: "New Client Added",
+    message:
+      "TechCorp Inc. has been successfully added to your client portfolio.",
+    type: "success",
+    timestamp: new Date(Date.now() - 15 * 60 * 1000), // 15 minutes ago
+    read: false,
+    actionUrl: "/clients",
+  },
+  {
+    id: "3",
+    title: "Budget Threshold Reached",
+    message:
+      'Facebook campaign "Q4 Holiday" has reached 90% of allocated budget.',
+    type: "info",
+    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+    read: false,
+    actionUrl: "/campaigns",
+  },
+  {
+    id: "4",
+    title: "Integration Successful",
+    message:
+      "Google Ads integration has been successfully configured and is now active.",
+    type: "success",
+    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4 hours ago
+    read: true,
+    actionUrl: "/integrations",
+  },
+  {
+    id: "5",
+    title: "API Rate Limit Warning",
+    message:
+      "You're approaching your API rate limit. Consider upgrading your plan.",
+    type: "warning",
+    timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000), // 6 hours ago
+    read: true,
+    actionUrl: "/settings",
+  },
+];
 
 const Sidebar = () => {
   const location = useLocation();
