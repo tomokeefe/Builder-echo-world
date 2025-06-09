@@ -75,6 +75,11 @@ const TestingDashboardPage = createLazyComponent(
   "Loading testing dashboard...",
 );
 
+const SearchResultsPage = createLazyComponent(
+  () => import("@/pages/SearchResults"),
+  "Loading search results...",
+);
+
 const ApiIntegrationPage = createLazyComponent(
   () => import("@/pages/ApiIntegration"),
   "Loading API integration...",
