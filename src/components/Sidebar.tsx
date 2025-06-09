@@ -562,22 +562,6 @@ const Sidebar = () => {
                 Settings
               </Link>
             </div>
-
-            {/* Upgrade Section */}
-            <div className="mt-6 p-3 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-200">
-              <div className="flex items-center gap-2 mb-2">
-                <Zap className="w-4 h-4 text-purple-600" />
-                <span className="text-sm font-medium text-purple-900">
-                  Pro Plan
-                </span>
-              </div>
-              <p className="text-xs text-purple-700 mb-3">
-                Unlock advanced features and unlimited campaigns.
-              </p>
-              <Button size="sm" className="w-full text-purple-600">
-                Upgrade Now
-              </Button>
-            </div>
           </div>
         </nav>
       </div>
