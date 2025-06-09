@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React from "react";
 
 export interface MobileDetection {
   isMobile: boolean;
@@ -12,7 +12,7 @@ export interface MobileDetection {
 }
 
 export const useMobile = (): MobileDetection => {
-  const [detection, setDetection] = useState<MobileDetection>({
+  const [detection, setDetection] = React.useState<MobileDetection>({
     isMobile: false,
     isTablet: false,
     isDesktop: true,
@@ -23,7 +23,7 @@ export const useMobile = (): MobileDetection => {
     viewportHeight: 768,
   });
 
-  useEffect(() => {
+  React.useEffect(() => {
     const updateDetection = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
