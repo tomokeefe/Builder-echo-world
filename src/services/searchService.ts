@@ -611,9 +611,20 @@ class SearchService {
     this.saveRecentSearches();
   }
 
-  // Add searchable item dynamically
+  // Add searchable item dynamically (prevents duplicates)
   addSearchableItem(item: SearchableItem) {
-    this.searchableItems.push(item);
+    // Check if item with same id already exists
+    const existingIndex = this.searchableItems.findIndex(
+      (existingItem) => existingItem.id === item.id,
+    );
+
+    if (existingIndex !== -1) {
+      // Update existing item instead of adding duplicate
+      this.searchableItems[existingIndex] = item;
+    } else {
+      // Add new item
+      this.searchableItems.push(item);
+    }
     this.initializeFuse(); // Reinitialize Fuse with new data
   }
 
