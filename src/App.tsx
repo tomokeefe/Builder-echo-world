@@ -89,6 +89,11 @@ const CollaborationPage = createLazyComponent(
   "Loading collaboration...",
 );
 
+const OrdersPage = createLazyComponent(
+  () => import("@/pages/Orders"),
+  "Loading orders...",
+);
+
 // Create a React Query client
 const queryClient = new QueryClient({
   defaultOptions: {
