@@ -268,65 +268,66 @@ const Analytics = () => {
                       </div>
                     ) : (
                       <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-600">
-                          {metric.name}
-                        </p>
-                        <motion.p
-                          className="text-2xl font-bold text-gray-900 mt-1"
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{
-                            delay: index * 0.1 + 0.2,
-                            type: "spring",
-                          }}
-                        >
-                          {formatValue(metric.value, metric.unit)}
-                        </motion.p>
-                        <div className="flex items-center mt-2">
-                          {metric.changeType === "increase" ? (
-                            <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-                          ) : metric.changeType === "decrease" ? (
-                            <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
-                          ) : (
-                            <Activity className="w-4 h-4 text-gray-500 mr-1" />
-                          )}
-                          <span
-                            className={`text-sm ${
-                              metric.changeType === "increase"
-                                ? "text-green-600"
-                                : metric.changeType === "decrease"
-                                  ? "text-red-600"
-                                  : "text-gray-600"
-                            }`}
+                        <div>
+                          <p className="text-sm font-medium text-gray-600">
+                            {metric.name}
+                          </p>
+                          <motion.p
+                            className="text-2xl font-bold text-gray-900 mt-1"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{
+                              delay: index * 0.1 + 0.2,
+                              type: "spring",
+                            }}
                           >
-                            {metric.change > 0 ? "+" : ""}
-                            {metric.change.toFixed(1)}%
-                          </span>
-                          <span className="text-sm text-gray-500 ml-1">
-                            vs last {metric.period}
-                          </span>
+                            {formatValue(metric.value, metric.unit)}
+                          </motion.p>
+                          <div className="flex items-center mt-2">
+                            {metric.changeType === "increase" ? (
+                              <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+                            ) : metric.changeType === "decrease" ? (
+                              <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
+                            ) : (
+                              <Activity className="w-4 h-4 text-gray-500 mr-1" />
+                            )}
+                            <span
+                              className={`text-sm ${
+                                metric.changeType === "increase"
+                                  ? "text-green-600"
+                                  : metric.changeType === "decrease"
+                                    ? "text-red-600"
+                                    : "text-gray-600"
+                              }`}
+                            >
+                              {metric.change > 0 ? "+" : ""}
+                              {metric.change.toFixed(1)}%
+                            </span>
+                            <span className="text-sm text-gray-500 ml-1">
+                              vs last {metric.period}
+                            </span>
+                          </div>
                         </div>
+                        <motion.div
+                          className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center"
+                          whileHover={{ scale: 1.1, rotate: 5 }}
+                          transition={{ type: "spring", stiffness: 400 }}
+                        >
+                          {metric.name.includes("Reach") && (
+                            <Users className="w-6 h-6 text-primary" />
+                          )}
+                          {metric.name.includes("Conversion") && (
+                            <Target className="w-6 h-6 text-primary" />
+                          )}
+                          {metric.name.includes("Cost") && (
+                            <DollarSign className="w-6 h-6 text-primary" />
+                          )}
+                          {metric.name.includes("Return") && (
+                            <TrendingUp className="w-6 h-6 text-primary" />
+                          )}
+                        </motion.div>
                       </div>
-                      <motion.div
-                        className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center"
-                        whileHover={{ scale: 1.1, rotate: 5 }}
-                        transition={{ type: "spring", stiffness: 400 }}
-                      >
-                        {metric.name.includes("Reach") && (
-                          <Users className="w-6 h-6 text-primary" />
-                        )}
-                        {metric.name.includes("Conversion") && (
-                          <Target className="w-6 h-6 text-primary" />
-                        )}
-                        {metric.name.includes("Cost") && (
-                          <DollarSign className="w-6 h-6 text-primary" />
-                        )}
-                        {metric.name.includes("Return") && (
-                          <TrendingUp className="w-6 h-6 text-primary" />
-                        )}
-                      </motion.div>
-                    </div>
+                    )}
                   </CardContent>
                 </Card>
               </motion.div>
