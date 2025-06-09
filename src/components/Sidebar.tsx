@@ -207,6 +207,30 @@ const Sidebar = () => {
     }
   };
 
+  const toggleSidebar = async () => {
+    const newCollapsedState = !isCollapsed;
+    setIsCollapsed(newCollapsedState);
+
+    // Update user preferences if available
+    if (user && updatePreferences) {
+      try {
+        await updatePreferences({
+          ...user.preferences,
+          sidebarCollapsed: newCollapsedState,
+        });
+      } catch (error) {
+        console.error("Failed to update sidebar preference:", error);
+      }
+    }
+  };
+
+  // Initialize collapsed state from user preferences
+  useEffect(() => {
+    if (user?.preferences?.sidebarCollapsed !== undefined) {
+      setIsCollapsed(user.preferences.sidebarCollapsed);
+    }
+  }, [user?.preferences?.sidebarCollapsed]);
+
   const navigationItems = [
     {
       title: "Dashboard",
