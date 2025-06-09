@@ -647,26 +647,34 @@ const Sidebar = () => {
       </div>
 
       {/* User Profile - Sticky at bottom */}
-      <div className="flex-shrink-0 p-4 border-t border-gray-200 bg-white">
+      <div
+        className={`flex-shrink-0 ${isCollapsed ? "p-2" : "p-4"} border-t border-gray-200 bg-white transition-all duration-300`}
+      >
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="w-full justify-start h-auto p-2 hover:bg-gray-50"
+              className={`w-full ${isCollapsed ? "justify-center" : "justify-start"} h-auto p-2 hover:bg-gray-50`}
             >
-              <div className="flex items-center gap-3">
+              <div
+                className={`flex items-center ${isCollapsed ? "" : "gap-3"}`}
+              >
                 <Avatar className="w-8 h-8">
                   <AvatarImage src={user?.avatar || "/placeholder.svg"} />
                   <AvatarFallback>
                     {user?.name?.charAt(0) || "U"}
                   </AvatarFallback>
                 </Avatar>
-                <div className="text-left">
-                  <p className="text-sm font-medium">{user?.name || "User"}</p>
-                  <p className="text-xs text-gray-500">
-                    {user?.email || "user@company.com"}
-                  </p>
-                </div>
+                {!isCollapsed && (
+                  <div className="text-left ml-3">
+                    <p className="text-sm font-medium">
+                      {user?.name || "User"}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {user?.email || "user@company.com"}
+                    </p>
+                  </div>
+                )}
               </div>
             </Button>
           </DropdownMenuTrigger>
