@@ -204,7 +204,7 @@ export const useOnboarding = () => {
     }
   }, [state.activeTour, state.currentStepIndex]);
 
-  const previousStep = useCallback(() => {
+  const previousStep = React.useCallback(() => {
     if (state.currentStepIndex > 0) {
       setState((prev) => ({
         ...prev,
