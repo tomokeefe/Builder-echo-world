@@ -820,7 +820,7 @@ mike.johnson@example.com,Mike Johnson,45,Male,Texas,finance;cars,research;compar
                             <SelectValue placeholder="Select purchase history column" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">None</SelectItem>
+                            <SelectItem value="none">None</SelectItem>
                             {csvData.headers.map((header) => (
                               <SelectItem key={header} value={header}>
                                 {header}
