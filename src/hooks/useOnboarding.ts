@@ -237,7 +237,7 @@ export const useOnboarding = () => {
     }));
   }, [state.activeTour]);
 
-  const resetTour = useCallback((tourId: string) => {
+  const resetTour = React.useCallback((tourId: string) => {
     setState((prev) => ({
       ...prev,
       completedTours: prev.completedTours.filter((id) => id !== tourId),
