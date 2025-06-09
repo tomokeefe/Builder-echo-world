@@ -454,7 +454,7 @@ const Sidebar = () => {
                 <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">
                   <div className="flex items-center gap-3">
                     <Target className="w-4 h-4" />
-                    Lookalike Audiences
+                    My Audiences
                   </div>
                   {isAudiencesOpen ? (
                     <ChevronDown className="w-4 h-4" />
