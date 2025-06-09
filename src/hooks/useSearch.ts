@@ -1,23 +1,31 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-// Simple debounce implementation instead of external library
+import searchService, { SearchableItem } from "@/services/searchService";
+import { SearchSuggestion } from "@/components/ui/search-autocomplete";
+import { useAudienceStore } from "@/hooks/useAudienceStore";
+
+// Simple stable debounce hook
 const useDebounce = (value: string, delay: number) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    const handler = setTimeout(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    timeoutRef.current = setTimeout(() => {
       setDebouncedValue(value);
     }, delay);
 
     return () => {
-      clearTimeout(handler);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
     };
   }, [value, delay]);
 
-  return [debouncedValue];
+  return debouncedValue;
 };
-import searchService, { SearchableItem } from "@/services/searchService";
-import { SearchSuggestion } from "@/components/ui/search-autocomplete";
-import { useAudienceStore } from "@/hooks/useAudienceStore";
 
 export interface SearchState {
   query: string;
@@ -25,31 +33,7 @@ export interface SearchState {
   isLoading: boolean;
   hasSearched: boolean;
   error: string | null;
-  filters: string[];
-  sortBy: "relevance" | "date" | "name" | "type";
-  sortOrder: "asc" | "desc";
 }
-
-export interface SearchFilters {
-  types?: string[];
-  categories?: string[];
-  dateRange?: {
-    from: Date;
-    to: Date;
-  };
-  status?: string[];
-}
-
-const initialState: SearchState = {
-  query: "",
-  results: [],
-  isLoading: false,
-  hasSearched: false,
-  error: null,
-  filters: [],
-  sortBy: "relevance",
-  sortOrder: "desc",
-};
 
 const DEFAULT_CONTEXT = {};
 
@@ -59,24 +43,29 @@ export const useSearch = (options?: {
   enableAI?: boolean;
   context?: Record<string, any>;
 }) => {
-  const {
-    debounceMs = 300,
-    maxResults = 10,
-    enableAI = true,
-    context = DEFAULT_CONTEXT,
-  } = options || {};
+  // Stable options with defaults
+  const debounceMs = options?.debounceMs ?? 300;
+  const maxResults = options?.maxResults ?? 10;
+  const enableAI = options?.enableAI ?? true;
+  const context = options?.context ?? DEFAULT_CONTEXT;
 
-  const [state, setState] = useState<SearchState>(initialState);
-  const [debouncedQuery] = useDebounce(state.query, debounceMs);
+  const [state, setState] = useState<SearchState>({
+    query: "",
+    results: [],
+    isLoading: false,
+    hasSearched: false,
+    error: null,
+  });
+
+  const debouncedQuery = useDebounce(state.query, debounceMs);
   const { audiences } = useAudienceStore();
   const syncedAudienceIdsRef = useRef<Set<string>>(new Set());
 
-  // Create a stable representation of audiences for dependency tracking
+  // Sync audiences with search service (stable implementation)
   const audienceStableKey = useMemo(() => {
     return audiences.map((a) => `${a.id}-${a.name}-${a.status}`).join("|");
   }, [audiences]);
 
-  // Sync audiences with search service (stable implementation)
   useEffect(() => {
     // Create a map of current audience IDs
     const currentAudienceIds = new Set(audiences.map((a) => a.id));
@@ -121,63 +110,55 @@ export const useSearch = (options?: {
         searchService.addSearchableItem(audienceItem);
         syncedAudienceIdsRef.current.add(audience.id);
       } else {
-        // Update existing item
         searchService.updateSearchableItem(
           `audience-${audience.id}`,
           audienceItem,
         );
       }
     });
-  }, [audienceStableKey]); // Use stable key to track changes
+  }, [audienceStableKey]);
 
-  // Effect to trigger search when debounced query changes
+  // Search effect - separate from the function to avoid dependency issues
   useEffect(() => {
-    const performSearch = async (query: string) => {
-      if (!query.trim()) {
-        setState((prev) => ({
-          ...prev,
-          results: searchService.getDefaultSuggestions(),
-          isLoading: false,
-          hasSearched: false,
-          error: null,
-        }));
-        return;
-      }
+    if (!debouncedQuery.trim()) {
+      setState((prev) => ({
+        ...prev,
+        results: searchService.getDefaultSuggestions(),
+        isLoading: false,
+        hasSearched: false,
+        error: null,
+      }));
+      return;
+    }
 
-      setState((prev) => ({ ...prev, isLoading: true, error: null }));
+    setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
+    // Use setTimeout to make this async and prevent blocking
+    const timeoutId = setTimeout(() => {
       try {
         // Get basic search results
-        const searchResults = searchService.search(query);
+        const searchResults = searchService.search(debouncedQuery);
 
         // Get AI suggestions if enabled
         const aiSuggestions = enableAI
-          ? searchService.getAISuggestions(query, context)
+          ? searchService.getAISuggestions(debouncedQuery, context)
           : [];
 
-        // Get filter suggestions - use current state value directly
-        setState((prev) => {
-          const filterSuggestions = searchService.getFilterSuggestions(
-            prev.filters,
-          );
+        // Combine and limit results
+        const allResults = [...aiSuggestions, ...searchResults].slice(
+          0,
+          maxResults,
+        );
 
-          // Combine and limit results
-          const allResults = [
-            ...aiSuggestions,
-            ...searchResults,
-            ...filterSuggestions.slice(0, 2),
-          ].slice(0, maxResults);
-
-          return {
-            ...prev,
-            results: allResults,
-            isLoading: false,
-            hasSearched: true,
-          };
-        });
+        setState((prev) => ({
+          ...prev,
+          results: allResults,
+          isLoading: false,
+          hasSearched: true,
+        }));
 
         // Add to recent searches
-        searchService.addToRecentSearches(query);
+        searchService.addToRecentSearches(debouncedQuery);
       } catch (error) {
         setState((prev) => ({
           ...prev,
@@ -186,61 +167,35 @@ export const useSearch = (options?: {
           results: [],
         }));
       }
-    };
+    }, 0);
 
-    performSearch(debouncedQuery);
-  }, [debouncedQuery, maxResults, enableAI, context]); // Include all necessary dependencies
+    return () => clearTimeout(timeoutId);
+  }, [debouncedQuery, maxResults, enableAI, context]);
 
-  // Set search query
+  // Stable action functions
   const setQuery = useCallback((query: string) => {
     setState((prev) => ({ ...prev, query }));
   }, []);
 
-  // Clear search
   const clearSearch = useCallback(() => {
-    setState(initialState);
+    setState({
+      query: "",
+      results: [],
+      isLoading: false,
+      hasSearched: false,
+      error: null,
+    });
   }, []);
 
-  // Add filter
-  const addFilter = useCallback((filterId: string) => {
-    setState((prev) => ({
-      ...prev,
-      filters: [...prev.filters, filterId],
-    }));
-  }, []);
-
-  // Remove filter
-  const removeFilter = useCallback((filterId: string) => {
-    setState((prev) => ({
-      ...prev,
-      filters: prev.filters.filter((id) => id !== filterId),
-    }));
-  }, []);
-
-  // Clear all filters
-  const clearFilters = useCallback(() => {
-    setState((prev) => ({ ...prev, filters: [] }));
-  }, []);
-
-  // Set sorting
-  const setSorting = useCallback(
-    (sortBy: SearchState["sortBy"], sortOrder: SearchState["sortOrder"]) => {
-      setState((prev) => ({ ...prev, sortBy, sortOrder }));
-    },
-    [],
-  );
-
-  // Get recent searches
+  // Stable suggestions and searches
   const recentSearches = useMemo(() => {
     return searchService.getRecentSearches();
-  }, []); // Only compute once, as recent searches are managed by searchService
+  }, []);
 
-  // Get popular searches
   const popularSearches = useMemo(() => {
     return searchService.getPopularSearches();
   }, []);
 
-  // Get suggestions based on current query
   const suggestions = useMemo(() => {
     if (!state.query.trim()) {
       return searchService.getDefaultSuggestions();
@@ -248,134 +203,25 @@ export const useSearch = (options?: {
     return state.results;
   }, [state.query, state.results]);
 
-  // Search shortcuts
-  const searchShortcuts = useMemo(
-    () => [
-      {
-        id: "create-audience",
-        title: "Create Audience",
-        description: "Build a new lookalike audience",
-        shortcut: "Ctrl+N",
-        action: () => console.log("Navigate to create audience"),
-      },
-      {
-        id: "view-analytics",
-        title: "View Analytics",
-        description: "Open analytics dashboard",
-        shortcut: "Ctrl+A",
-        action: () => console.log("Navigate to analytics"),
-      },
-      {
-        id: "add-client",
-        title: "Add Client",
-        description: "Create a new client account",
-        shortcut: "Ctrl+Shift+C",
-        action: () => console.log("Open add client modal"),
-      },
-    ],
-    [],
-  );
+  const handleSuggestionSelect = useCallback((suggestion: SearchSuggestion) => {
+    // Add to recent searches if it's a search suggestion
+    if (suggestion.type !== "filter" && suggestion.type !== "shortcut") {
+      searchService.addToRecentSearches(suggestion.text);
+    }
 
-  // Handle suggestion selection
-  const handleSuggestionSelect = useCallback(
-    (suggestion: SearchSuggestion) => {
-      // Add to recent searches if it's a search suggestion
-      if (suggestion.type !== "filter" && suggestion.type !== "shortcut") {
-        searchService.addToRecentSearches(suggestion.text);
-      }
-
-      // Handle different suggestion types
-      switch (suggestion.type) {
-        case "filter":
-          addFilter(suggestion.id);
-          break;
-        case "shortcut":
-          suggestion.action?.();
-          break;
-        default:
-          // Navigate to URL if available
-          if (suggestion.metadata?.url) {
-            window.location.href = suggestion.metadata.url;
-          }
-          break;
-      }
-    },
-    [addFilter],
-  );
-
-  // Advanced search with filters
-  const advancedSearch = useCallback(
-    async (query: string, filters: SearchFilters) => {
-      setState((prev) => ({ ...prev, isLoading: true }));
-
-      try {
-        // This would integrate with a more sophisticated search API
-        const results = searchService.search(query);
-
-        // Apply filters (mock implementation)
-        let filteredResults = results;
-
-        if (filters.types?.length) {
-          filteredResults = filteredResults.filter((result) =>
-            filters.types!.includes(result.metadata?.type),
-          );
+    // Handle different suggestion types
+    switch (suggestion.type) {
+      case "shortcut":
+        suggestion.action?.();
+        break;
+      default:
+        // Navigate to URL if available
+        if (suggestion.metadata?.url) {
+          window.location.href = suggestion.metadata.url;
         }
-
-        if (filters.categories?.length) {
-          filteredResults = filteredResults.filter((result) =>
-            filters.categories!.includes(result.category || ""),
-          );
-        }
-
-        setState((prev) => ({
-          ...prev,
-          results: filteredResults,
-          isLoading: false,
-          hasSearched: true,
-        }));
-      } catch (error) {
-        setState((prev) => ({
-          ...prev,
-          error:
-            error instanceof Error ? error.message : "Advanced search failed",
-          isLoading: false,
-        }));
-      }
-    },
-    [],
-  );
-
-  // Export search results
-  const exportResults = useCallback(() => {
-    const data = {
-      query: state.query,
-      results: state.results,
-      timestamp: new Date().toISOString(),
-      filters: state.filters,
-    };
-
-    const blob = new Blob([JSON.stringify(data, null, 2)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `search-results-${Date.now()}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  }, [state]);
-
-  // Get search analytics
-  const getAnalytics = useCallback(() => {
-    return {
-      totalSearches: recentSearches.length,
-      topQueries: popularSearches.slice(0, 5),
-      averageResultsPerSearch: state.results.length,
-      successRate: state.hasSearched && state.results.length > 0 ? 100 : 0,
-    };
-  }, [recentSearches, popularSearches, state.results, state.hasSearched]);
+        break;
+    }
+  }, []);
 
   return {
     // Current state
@@ -384,29 +230,16 @@ export const useSearch = (options?: {
     isLoading: state.isLoading,
     hasSearched: state.hasSearched,
     error: state.error,
-    filters: state.filters,
-    sortBy: state.sortBy,
-    sortOrder: state.sortOrder,
 
     // Suggestions and shortcuts
     suggestions,
     recentSearches,
     popularSearches,
-    searchShortcuts,
 
     // Actions
     setQuery,
     clearSearch,
-    addFilter,
-    removeFilter,
-    clearFilters,
-    setSorting,
     handleSuggestionSelect,
-    advancedSearch,
-    exportResults,
-
-    // Analytics
-    getAnalytics,
 
     // Direct access to search service
     searchService,
