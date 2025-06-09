@@ -58,6 +58,9 @@ export const useSearch = (options?: {
     isLoading: false,
     hasSearched: false,
     error: null,
+    filters: [],
+    sortBy: "relevance",
+    sortOrder: "desc",
   });
 
   const debouncedQuery = useDebounce(state.query, debounceMs);
