@@ -84,25 +84,44 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="w-64 bg-white border-r border-gray-200 flex flex-col h-full">
+    <div
+      className="w-64 bg-white border-r border-gray-200 flex flex-col h-full hidden md:flex"
+      data-tour="sidebar"
+    >
       {/* Header */}
       <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <Circle className="w-4 h-4 text-white" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <Circle className="w-4 h-4 text-white" />
+            </div>
+            <h1 className="text-xl font-semibold text-gray-900">Skydeo</h1>
           </div>
-          <h1 className="text-xl font-semibold text-gray-900">Skydeo</h1>
+
+          {/* Notification Bell */}
+          <button
+            className="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+            aria-label="Notifications"
+            data-tour="notifications"
+          >
+            <Bell className="w-5 h-5" />
+            {/* Notification Badge */}
+            <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full flex items-center justify-center">
+              <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
+            </span>
+          </button>
         </div>
       </div>
 
       {/* Search */}
       <div className="p-4 border-b border-gray-200">
-        <div className="relative">
+        <div className="relative" data-tour="search">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
             placeholder="Search..."
             className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            data-tour="search-input"
           />
         </div>
       </div>
@@ -120,6 +139,9 @@ const Sidebar = () => {
                   ? "bg-primary text-white"
                   : "text-gray-700 hover:bg-gray-100"
               }`}
+              data-tour={
+                item.title === "Dashboard" ? "create-audience" : undefined
+              }
             >
               <item.icon className="w-4 h-4" />
               {item.title}
