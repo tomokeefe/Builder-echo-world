@@ -199,7 +199,7 @@ export const EnhancedChart: React.FC<EnhancedChartProps> = ({
       );
     }
 
-    if (!config.data || config.data.length === 0) {
+    if (!chartConfig.data || chartConfig.data.length === 0) {
       return (
         <div className="flex items-center justify-center h-full text-gray-500">
           <div className="text-center">
@@ -211,11 +211,11 @@ export const EnhancedChart: React.FC<EnhancedChartProps> = ({
     }
 
     const commonProps = {
-      data: config.data,
+      data: chartConfig.data,
       margin: { top: 5, right: 30, left: 20, bottom: 5 },
     };
 
-    switch (config.type) {
+    switch (chartConfig.type) {
       case "line":
         return (
           <LineChart {...commonProps}>
