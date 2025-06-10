@@ -635,7 +635,6 @@ class SearchService {
 
     this.initializeFuse(); // Reinitialize Fuse with new data
   }
-  }
 
   // Remove searchable item
   removeSearchableItem(id: string) {
