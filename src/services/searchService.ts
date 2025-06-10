@@ -627,47 +627,14 @@ class SearchService {
 
     if (existingIndex !== -1) {
       // Update existing item instead of adding duplicate
-      console.log("🔄 SearchService: Updating existing item:", item.id);
       this.searchableItems[existingIndex] = item;
     } else {
       // Add new item
-      console.log("➕ SearchService: Adding new item:", item.id);
       this.searchableItems.push(item);
-    }
-
-    // Double-check for duplicates after operation
-    const duplicates = this.findDuplicateIds();
-    if (duplicates.length > 0) {
-      console.warn("⚠️ SearchService: Found duplicates after add:", duplicates);
-      this.removeDuplicates();
     }
 
     this.initializeFuse(); // Reinitialize Fuse with new data
   }
-
-  // Helper method to find duplicate IDs
-  private findDuplicateIds(): string[] {
-    const idCounts = new Map<string, number>();
-    this.searchableItems.forEach((item) => {
-      idCounts.set(item.id, (idCounts.get(item.id) || 0) + 1);
-    });
-
-    return Array.from(idCounts.entries())
-      .filter(([id, count]) => count > 1)
-      .map(([id]) => id);
-  }
-
-  // Helper method to remove duplicates
-  private removeDuplicates() {
-    const seen = new Set<string>();
-    this.searchableItems = this.searchableItems.filter((item) => {
-      if (seen.has(item.id)) {
-        console.log("🗑️ SearchService: Removing duplicate:", item.id);
-        return false;
-      }
-      seen.add(item.id);
-      return true;
-    });
   }
 
   // Remove searchable item
