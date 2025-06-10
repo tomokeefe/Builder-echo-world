@@ -454,74 +454,71 @@ export function SearchResults() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                  <Card
-                    className={cn(
-                      "cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-105 group",
-                      viewMode === "list" && "hover:scale-100",
-                    )}
-                    onClick={() => handleResultClick(result)}
-                  >
-                    <CardHeader className={cn(viewMode === "list" && "pb-2")}>
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-3">
-                          {getTypeIcon(result.metadata?.type || "feature")}
-                          <div>
-                            <CardTitle className="text-base group-hover:text-primary transition-colors">
-                              {result.text}
-                            </CardTitle>
-                            {result.category && (
-                              <p className="text-xs text-gray-500 mt-1">
-                                {result.category}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {result.type && (
-                            <Badge
-                              variant="outline"
-                              className={cn(
-                                "text-xs",
-                                getResultTypeColor(result.type),
-                              )}
-                            >
-                              {result.type === "ai" && (
-                                <Sparkles className="w-3 h-3 mr-1" />
-                              )}
-                              {result.type === "recent" && (
-                                <Clock className="w-3 h-3 mr-1" />
-                              )}
-                              {result.type === "popular" && (
-                                <TrendingUp className="w-3 h-3 mr-1" />
-                              )}
-                              {result.type}
-                            </Badge>
+                <Card
+                  className={cn(
+                    "cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-105 group",
+                    viewMode === "list" && "hover:scale-100",
+                  )}
+                  onClick={() => handleResultClick(result)}
+                >
+                  <CardHeader className={cn(viewMode === "list" && "pb-2")}>
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        {getTypeIcon(result.metadata?.type || "feature")}
+                        <div>
+                          <CardTitle className="text-base group-hover:text-primary transition-colors">
+                            {result.text}
+                          </CardTitle>
+                          {result.category && (
+                            <p className="text-xs text-gray-500 mt-1">
+                              {result.category}
+                            </p>
                           )}
-                          <ArrowUpRight className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
                       </div>
-                    </CardHeader>
-                    {result.description && (
-                      <CardContent
-                        className={cn(viewMode === "list" && "pt-0")}
-                      >
-                        <p className="text-sm text-gray-600 line-clamp-2">
-                          {result.description}
-                        </p>
-                        {result.metadata?.score && (
-                          <div className="flex items-center gap-2 mt-2">
-                            <Badge variant="outline" className="text-xs">
-                              {Math.round((1 - result.metadata.score) * 100)}%
-                              match
-                            </Badge>
-                          </div>
+                      <div className="flex items-center gap-2">
+                        {result.type && (
+                          <Badge
+                            variant="outline"
+                            className={cn(
+                              "text-xs",
+                              getResultTypeColor(result.type),
+                            )}
+                          >
+                            {result.type === "ai" && (
+                              <Sparkles className="w-3 h-3 mr-1" />
+                            )}
+                            {result.type === "recent" && (
+                              <Clock className="w-3 h-3 mr-1" />
+                            )}
+                            {result.type === "popular" && (
+                              <TrendingUp className="w-3 h-3 mr-1" />
+                            )}
+                            {result.type}
+                          </Badge>
                         )}
-                      </CardContent>
-                    )}
-                  </Card>
-                </motion.div>
-              );
-            })}
+                        <ArrowUpRight className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    </div>
+                  </CardHeader>
+                  {result.description && (
+                    <CardContent className={cn(viewMode === "list" && "pt-0")}>
+                      <p className="text-sm text-gray-600 line-clamp-2">
+                        {result.description}
+                      </p>
+                      {result.metadata?.score && (
+                        <div className="flex items-center gap-2 mt-2">
+                          <Badge variant="outline" className="text-xs">
+                            {Math.round((1 - result.metadata.score) * 100)}%
+                            match
+                          </Badge>
+                        </div>
+                      )}
+                    </CardContent>
+                  )}
+                </Card>
+              </motion.div>
+            ))}
           </div>
         ) : hasSearched ? (
           <Card>
