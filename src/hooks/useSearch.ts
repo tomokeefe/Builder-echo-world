@@ -73,12 +73,21 @@ export const useSearch = (options?: {
   }, [audiences]);
 
   useEffect(() => {
+    // Prevent duplicate sync operations with a flag
+    if (audiences.length === 0) return;
+
+    console.log(
+      "🔄 Syncing audiences to search service:",
+      audiences.map((a) => `${a.id}: ${a.name}`),
+    );
+
     // Create a map of current audience IDs
     const currentAudienceIds = new Set(audiences.map((a) => a.id));
 
     // Remove audiences that no longer exist
     for (const syncedId of syncedAudienceIdsRef.current) {
       if (!currentAudienceIds.has(syncedId)) {
+        console.log("🗑️ Removing audience:", syncedId);
         searchService.removeSearchableItem(`audience-${syncedId}`);
         syncedAudienceIdsRef.current.delete(syncedId);
       }
@@ -113,15 +122,30 @@ export const useSearch = (options?: {
       };
 
       if (!syncedAudienceIdsRef.current.has(audience.id)) {
+        console.log(
+          "➕ Adding new audience to search:",
+          audience.id,
+          audience.name,
+        );
         searchService.addSearchableItem(audienceItem);
         syncedAudienceIdsRef.current.add(audience.id);
       } else {
+        console.log(
+          "🔄 Updating existing audience in search:",
+          audience.id,
+          audience.name,
+        );
         searchService.updateSearchableItem(
           `audience-${audience.id}`,
           audienceItem,
         );
       }
     });
+
+    console.log(
+      "✅ Audience sync complete. Synced IDs:",
+      Array.from(syncedAudienceIdsRef.current),
+    );
   }, [audienceStableKey]);
 
   // Search effect - separate from the function to avoid dependency issues
