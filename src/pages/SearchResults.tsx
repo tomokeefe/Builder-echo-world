@@ -447,16 +447,13 @@ export function SearchResults() {
                 : "space-y-4",
             )}
           >
-            {filteredResults.map((result, index) => {
-              // Create a truly unique key using multiple identifiers
-              const uniqueKey = `${result.id}-${result.text}-${index}`;
-              return (
-                <motion.div
-                  key={uniqueKey}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
+            {filteredResults.map((result, index) => (
+              <motion.div
+                key={`result-${result.id}-${index}-${result.text?.slice(0, 10)}`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
                   <Card
                     className={cn(
                       "cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-105 group",
