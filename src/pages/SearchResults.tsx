@@ -449,7 +449,7 @@ export function SearchResults() {
           >
             {filteredResults.map((result, index) => {
               // Create a truly unique key using multiple identifiers
-              const uniqueKey = `${result.id}-${result.text}-${index}-${Date.now()}`;
+              const uniqueKey = `${result.id}-${result.text}-${index}`;
               return (
                 <motion.div
                   key={uniqueKey}
