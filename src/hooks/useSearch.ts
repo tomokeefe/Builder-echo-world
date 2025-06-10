@@ -40,6 +40,9 @@ export interface SearchState {
 
 const DEFAULT_CONTEXT = {};
 
+// Global instance counter to prevent duplicate syncing
+let searchHookInstances = 0;
+
 export const useSearch = (options?: {
   debounceMs?: number;
   maxResults?: number;
@@ -65,21 +68,22 @@ export const useSearch = (options?: {
 
   const debouncedQuery = useDebounce(state.query, debounceMs);
   const { audiences } = useAudienceStore();
+  const instanceIdRef = useRef<number>(0);
   const syncedAudienceIdsRef = useRef<Set<string>>(new Set());
 
-  // Sync audiences with search service (stable implementation)
+  // Assign unique instance ID
+  useEffect(() => {
+    instanceIdRef.current = ++searchHookInstances;
+  }, []);
+
+  // Sync audiences with search service (only for the first instance)
   const audienceStableKey = useMemo(() => {
     return audiences.map((a) => `${a.id}-${a.name}-${a.status}`).join("|");
   }, [audiences]);
 
   useEffect(() => {
-    // Prevent duplicate sync operations with a flag
-    if (audiences.length === 0) return;
-
-    console.log(
-      "🔄 Syncing audiences to search service:",
-      audiences.map((a) => `${a.id}: ${a.name}`),
-    );
+    // Only the first instance should sync audiences to prevent duplicates
+    if (instanceIdRef.current !== 1 || audiences.length === 0) return;
 
     // Create a map of current audience IDs
     const currentAudienceIds = new Set(audiences.map((a) => a.id));
@@ -87,7 +91,6 @@ export const useSearch = (options?: {
     // Remove audiences that no longer exist
     for (const syncedId of syncedAudienceIdsRef.current) {
       if (!currentAudienceIds.has(syncedId)) {
-        console.log("🗑️ Removing audience:", syncedId);
         searchService.removeSearchableItem(`audience-${syncedId}`);
         syncedAudienceIdsRef.current.delete(syncedId);
       }
@@ -122,33 +125,18 @@ export const useSearch = (options?: {
       };
 
       if (!syncedAudienceIdsRef.current.has(audience.id)) {
-        console.log(
-          "➕ Adding new audience to search:",
-          audience.id,
-          audience.name,
-        );
         searchService.addSearchableItem(audienceItem);
         syncedAudienceIdsRef.current.add(audience.id);
       } else {
-        console.log(
-          "🔄 Updating existing audience in search:",
-          audience.id,
-          audience.name,
-        );
         searchService.updateSearchableItem(
           `audience-${audience.id}`,
           audienceItem,
         );
       }
     });
-
-    console.log(
-      "✅ Audience sync complete. Synced IDs:",
-      Array.from(syncedAudienceIdsRef.current),
-    );
   }, [audienceStableKey]);
 
-  // Search effect - separate from the function to avoid dependency issues
+  // Search effect
   useEffect(() => {
     if (!debouncedQuery.trim()) {
       setState((prev) => ({
@@ -163,10 +151,9 @@ export const useSearch = (options?: {
 
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
-    // Use setTimeout to make this async and prevent blocking
     const timeoutId = setTimeout(() => {
       try {
-        // Get basic search results
+        // Get search results
         const searchResults = searchService.search(debouncedQuery);
 
         // Get AI suggestions if enabled
@@ -180,9 +167,17 @@ export const useSearch = (options?: {
           maxResults,
         );
 
+        // Aggressive deduplication based on ID and text
+        const uniqueResults = allResults.filter(
+          (result, index, array) =>
+            array.findIndex(
+              (item) => item.id === result.id && item.text === result.text,
+            ) === index,
+        );
+
         setState((prev) => ({
           ...prev,
-          results: allResults,
+          results: uniqueResults,
           isLoading: false,
           hasSearched: true,
         }));
@@ -218,42 +213,6 @@ export const useSearch = (options?: {
       sortBy: "relevance",
       sortOrder: "desc",
     });
-  }, []);
-
-  // Stable suggestions and searches
-  const recentSearches = useMemo(() => {
-    return searchService.getRecentSearches();
-  }, []);
-
-  const popularSearches = useMemo(() => {
-    return searchService.getPopularSearches();
-  }, []);
-
-  const suggestions = useMemo(() => {
-    if (!state.query.trim()) {
-      return searchService.getDefaultSuggestions();
-    }
-    return state.results;
-  }, [state.query, state.results]);
-
-  const handleSuggestionSelect = useCallback((suggestion: SearchSuggestion) => {
-    // Add to recent searches if it's a search suggestion
-    if (suggestion.type !== "filter" && suggestion.type !== "shortcut") {
-      searchService.addToRecentSearches(suggestion.text);
-    }
-
-    // Handle different suggestion types
-    switch (suggestion.type) {
-      case "shortcut":
-        suggestion.action?.();
-        break;
-      default:
-        // Navigate to URL if available
-        if (suggestion.metadata?.url) {
-          window.location.href = suggestion.metadata.url;
-        }
-        break;
-    }
   }, []);
 
   // Filter management functions
@@ -309,6 +268,42 @@ export const useSearch = (options?: {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   }, [state]);
+
+  // Stable suggestions and searches
+  const recentSearches = useMemo(() => {
+    return searchService.getRecentSearches();
+  }, []);
+
+  const popularSearches = useMemo(() => {
+    return searchService.getPopularSearches();
+  }, []);
+
+  const suggestions = useMemo(() => {
+    if (!state.query.trim()) {
+      return searchService.getDefaultSuggestions();
+    }
+    return state.results;
+  }, [state.query, state.results]);
+
+  const handleSuggestionSelect = useCallback((suggestion: SearchSuggestion) => {
+    // Add to recent searches if it's a search suggestion
+    if (suggestion.type !== "filter" && suggestion.type !== "shortcut") {
+      searchService.addToRecentSearches(suggestion.text);
+    }
+
+    // Handle different suggestion types
+    switch (suggestion.type) {
+      case "shortcut":
+        suggestion.action?.();
+        break;
+      default:
+        // Navigate to URL if available
+        if (suggestion.metadata?.url) {
+          window.location.href = suggestion.metadata.url;
+        }
+        break;
+    }
+  }, []);
 
   // Get search analytics
   const getAnalytics = useCallback(() => {
